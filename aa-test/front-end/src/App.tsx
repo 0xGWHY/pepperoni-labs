@@ -56,7 +56,7 @@ function App() {
           return;
         }
 
-        toast("✍️ Sign order successfully!", { duration: 3000 });
+        toast("✍️ Sign success", { duration: 3000 });
         console.log(sended);
         setTo("");
         setData("");
@@ -70,6 +70,17 @@ function App() {
             id: toastId,
             duration: 3000,
           });
+          toast(
+            <span>
+              View on{" "}
+              <a href={`https://sepolia.etherscan.io/tx/${completed}`} target="_blank" className="text-blue-600" rel="noreferrer">
+                Etherscan 🔍
+              </a>
+            </span>,
+            {
+              duration: 7000,
+            }
+          );
           if (completed?.slice(0, 2) === "0x") {
             const data = await waitForTransaction({ hash: completed });
           }
@@ -98,7 +109,7 @@ function App() {
       return;
     }
 
-    toast("✍️ Sign order successfully!", { duration: 3000 });
+    toast("✍️ Sign success", { duration: 3000 });
     console.log(sended);
     setTo("");
     setData("");
@@ -111,6 +122,17 @@ function App() {
         id: toastId,
         duration: 3000,
       });
+      toast(
+        <span>
+          View on{" "}
+          <a href={`https://sepolia.etherscan.io/tx/${completed}`} target="_blank" className="text-blue-600 text-bold" rel="noreferrer">
+            Etherscan 🔍
+          </a>
+        </span>,
+        {
+          duration: 7000,
+        }
+      );
       if (completed?.slice(0, 2) === "0x") {
         const data = await waitForTransaction({ hash: completed });
       }

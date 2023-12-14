@@ -6,8 +6,8 @@ import reportWebVitals from "./reportWebVitals";
 
 //web3
 import { ECDSAValidator } from "@zerodev/sdk";
-import { enhanceWalletWithAAConnector, googleWallet, githubWallet, discordWallet } from "@zerodev/wagmi/rainbowkit";
-import { RainbowKitProvider, connectorsForWallets, darkTheme } from "@rainbow-me/rainbowkit";
+import { enhanceWalletWithAAConnector, googleWallet, githubWallet, twitterWallet, discordWallet } from "@zerodev/wagmi/rainbowkit";
+import { RainbowKitProvider, connectorsForWallets, darkTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { rainbowWallet, metaMaskWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet, sepolia, polygon, polygonMumbai } from "wagmi/chains";
@@ -22,17 +22,18 @@ const zerodev = process.env.REACT_APP_ZERODEV!;
 
 const connectors = connectorsForWallets([
   {
-    groupName: "Connect EOA for AA",
+    groupName: "EOA",
     wallets: [
       enhanceWalletWithAAConnector(metaMaskWallet({ chains, projectId }), { projectId: zerodev }),
-      enhanceWalletWithAAConnector(walletConnectWallet({ chains, projectId }), { projectId: zerodev }),
-      enhanceWalletWithAAConnector(rainbowWallet({ chains, projectId }), { projectId: zerodev }),
+      // enhanceWalletWithAAConnector(walletConnectWallet({ chains, projectId }), { projectId: zerodev }),
+      // enhanceWalletWithAAConnector(rainbowWallet({ chains, projectId }), { projectId: zerodev }),
     ],
   },
   {
     groupName: "Social",
     wallets: [
       googleWallet({ chains: chainList, options: { projectId: zerodev, shimDisconnect: true } }),
+      twitterWallet({ chains: chainList, options: { projectId: zerodev, shimDisconnect: true } }),
       githubWallet({ chains: chainList, options: { projectId: zerodev, shimDisconnect: true } }),
       discordWallet({ chains: chainList, options: { projectId: zerodev, shimDisconnect: true } }),
     ],
@@ -52,9 +53,8 @@ root.render(
       <RainbowKitProvider
         chains={chains}
         locale="en"
-        theme={darkTheme({
-          accentColor: "oklch(var(--p))",
-          overlayBlur: "small",
+        theme={midnightTheme({
+          accentColor: "oklch(var(--ac))",
         })}
         showRecentTransactions={true}
       >
