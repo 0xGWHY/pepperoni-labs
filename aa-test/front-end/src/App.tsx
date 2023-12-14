@@ -140,9 +140,9 @@ function App() {
   };
 
   return (
-    <div className="App flex justify-center w-screen items-center h-screen flex-col">
+    <div className="App flex justify-center w-screen items-center h-screen flex-col max-md:px-4">
       <div key={render} className="w-full mb-10 flex justify-center">
-        <ConnectButton />
+        <ConnectButton showBalance={{ smallScreen: true, largeScreen: true }} />
       </div>
       <div className="form-control max-w-md w-full">
         <div className="label">
