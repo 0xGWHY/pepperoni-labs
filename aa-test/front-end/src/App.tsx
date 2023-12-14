@@ -106,6 +106,7 @@ function App() {
 
     if (sended?.hash.slice(0, 2) === "0x") {
       const completed = await ecdsaProvider?.waitForUserOperationTransaction(`0x${sended.hash.slice(2)}`);
+      setRender(render + 1);
       toast.success("Confirmed!", {
         id: toastId,
         duration: 3000,
