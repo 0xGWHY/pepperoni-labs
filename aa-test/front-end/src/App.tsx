@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import "./App.css";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { usePrepareSendUserOperation, useSendUserOperation } from "@zerodev/wagmi";
-import { waitForTransaction, watchAccount } from "wagmi/actions";
-import { useBalance } from "wagmi";
+import { waitForTransaction } from "wagmi/actions";
 import { useEcdsaProvider } from "@zerodev/wagmi";
-import { parseEther } from "viem";
 import { toast } from "react-hot-toast";
+import { encodeFunctionData, parseAbi, parseEther } from "viem";
+import { EternalNFTABI } from "./abis/EternalNFT";
 
 function App() {
   const ecdsaProvider = useEcdsaProvider();
@@ -45,6 +44,7 @@ function App() {
         callData = `0x${data.slice(2)}`;
         let sended;
         try {
+          console.log({ target: toAddress, data: callData, value: parseEther(value) });
           sended = await ecdsaProvider?.sendUserOperation({
             target: toAddress,
             data: callData,
@@ -92,17 +92,29 @@ function App() {
       toast.error("Unvalid address!", { id: toastId });
     }
   };
-
   const testTx = async () => {
     const toastId = toast.loading("Transaction Processing...");
-
     let sended;
     try {
-      sended = await ecdsaProvider?.sendUserOperation({
-        target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-        data: "0x3330880e",
-        value: parseEther("0"),
-      });
+      console.log({ target: "0x024D4836EEf1a20E83BB943038f641FF96432409", data: "0x3330880e", value: parseEther("0") });
+      sended = await ecdsaProvider?.sendUserOperation([
+        {
+          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
+          // data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT", args: undefined }),
+          data: "0x3330880e",
+          value: parseEther("0"),
+        },
+        // {
+        //   target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
+        //   data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT", args: undefined }),
+        //   value: parseEther("0"),
+        // },
+        // {
+        //   target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
+        //   data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT", args: undefined }),
+        //   value: parseEther("0"),
+        // },
+      ]);
     } catch (error) {
       toast.dismiss(toastId);
       console.error(error);
