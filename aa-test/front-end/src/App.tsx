@@ -44,7 +44,7 @@ function App() {
         callData = `0x${data.slice(2)}`;
         let sended;
         try {
-          console.log({ target: toAddress, data: callData, value: parseEther(value) });
+          // console.log({ target: toAddress, data: callData, value: parseEther(value) });
           sended = await ecdsaProvider?.sendUserOperation({
             target: toAddress,
             data: callData,
@@ -95,25 +95,34 @@ function App() {
   const testTx = async () => {
     const toastId = toast.loading("Transaction Processing...");
     let sended;
+    // 0x3330880e
     try {
-      console.log({ target: "0x024D4836EEf1a20E83BB943038f641FF96432409", data: "0x3330880e", value: parseEther("0") });
       sended = await ecdsaProvider?.sendUserOperation([
         {
           target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-          // data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT", args: undefined }),
-          data: "0x3330880e",
+          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
           value: parseEther("0"),
         },
-        // {
-        //   target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-        //   data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT", args: undefined }),
-        //   value: parseEther("0"),
-        // },
-        // {
-        //   target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-        //   data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT", args: undefined }),
-        //   value: parseEther("0"),
-        // },
+        {
+          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
+          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
+          value: parseEther("0"),
+        },
+        {
+          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
+          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
+          value: parseEther("0"),
+        },
+        {
+          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
+          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
+          value: parseEther("0"),
+        },
+        {
+          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
+          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
+          value: parseEther("0"),
+        },
       ]);
     } catch (error) {
       toast.dismiss(toastId);
