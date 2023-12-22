@@ -1,7 +1,0 @@
-ethers
-cd ..
-ethers
-config
-ethers
-parseEther('')
-ethers
