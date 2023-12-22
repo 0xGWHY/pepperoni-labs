@@ -26,7 +26,7 @@ import {ValidationData, ValidAfter, ValidUntil, parseValidationData, packValidat
 /// @author taek<leekt216@gmail.com>
 /// @notice wallet kernel for extensible wallet functionality
 contract Kernel is EIP712, Compatibility, KernelStorage {
-    string public constant name = KERNEL_NAME;
+    string public constant name = KERNEL_NAME
   
     string public constant version = KERNEL_VERSION;
 

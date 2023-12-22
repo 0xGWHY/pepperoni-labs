@@ -6,6 +6,8 @@ import { useEcdsaProvider } from "@zerodev/wagmi";
 import { toast } from "react-hot-toast";
 import { encodeFunctionData, parseAbi, parseEther } from "viem";
 import { EternalNFTABI } from "./abis/EternalNFT";
+import { kernelABI } from "./abis/KernelABI";
+import { UniswapV2Router02ABI } from "./abis/UniswapV2Router02";
 
 function App() {
   const ecdsaProvider = useEcdsaProvider();
@@ -99,28 +101,30 @@ function App() {
     try {
       sended = await ecdsaProvider?.sendUserOperation([
         {
-          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
+          // approve dai
+          target: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
+          data: "0x095ea7b3000000000000000000000000c532a74256d3db42d0bf7a0400fefdbad7694008ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           value: parseEther("0"),
         },
         {
-          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
+          target: "0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008",
+          data: encodeFunctionData({
+            abi: UniswapV2Router02ABI,
+            functionName: "swapExactTokensForETH",
+            args: [
+              BigInt("126571435318077224385"),
+              BigInt("0"),
+              ["0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357", "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"],
+              "0xfda9c831090Eb4E006B54846C435dD333856001E",
+              BigInt(1703175598),
+            ],
+          }),
           value: parseEther("0"),
         },
         {
-          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
-          value: parseEther("0"),
-        },
-        {
-          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
-          value: parseEther("0"),
-        },
-        {
-          target: "0x024D4836EEf1a20E83BB943038f641FF96432409",
-          data: encodeFunctionData({ abi: EternalNFTABI, functionName: "createEternalNFT" }),
+          // approve dai
+          target: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
+          data: "0x095ea7b3000000000000000000000000c532a74256d3db42d0bf7a0400fefdbad76940080000000000000000000000000000000000000000000000000000000000000000",
           value: parseEther("0"),
         },
       ]);

@@ -1,0 +1,10 @@
+{
+  "name": "ethers",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.1"
+  },
+  "type": "module"
+}
