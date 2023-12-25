@@ -73,7 +73,7 @@ contract Queues {
 
     
     /*
-    only admin functions
+    Only manager functions
         1. setQueueHash
         2. setQueueFee
         3. setQueueWhitelist
