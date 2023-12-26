@@ -16,9 +16,10 @@ contract URegistryTest is Test, UAuth {
         uRegistry = new URegistry();
         stranger = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "stranger")))));
         entry = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "entry")))));
-        thirdPartyEntry = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "thirdPartyEntry")))));
-        randomContract = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "randomContract")))));
-       
+        thirdPartyEntry =
+            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "thirdPartyEntry")))));
+        randomContract =
+            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "randomContract")))));
     }
 
     function testFail_NonOwner() public {
@@ -29,29 +30,29 @@ contract URegistryTest is Test, UAuth {
     function test_Owner() public {
         uRegistry.addNewContract(bytes4("test"), address(this), 0); // This should pass
     }
-    
+
     function test_ChangeContractAddress() public {
         bytes4 id = bytes4(keccak256(abi.encodePacked("changeTest")));
-        address existingAddress = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "existingAddress")))));
+        address existingAddress =
+            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "existingAddress")))));
         uRegistry.addNewContract(id, existingAddress, 2);
-        address newAddress = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "newAddress")))));
+        address newAddress =
+            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "newAddress")))));
 
         uRegistry.startContractChange(id, newAddress); // Start contract change
-        (, , , bool inContractChange, , ) = uRegistry.getEntry(id); // Get the updated entry
+        (,,, bool inContractChange,,) = uRegistry.getEntry(id); // Get the updated entry
         assertTrue(inContractChange, "contract change fail"); // Check if inContractChange is true
 
         try uRegistry.approveContractChange(id) {
             assert(false); // This should fail
-        } catch {
-           
-        }
-        (,uint256 waitPeriod, , , , ) = uRegistry.getEntry(id); // Get the updated entry
+        } catch {}
+        (, uint256 waitPeriod,,,,) = uRegistry.getEntry(id); // Get the updated entry
 
         vm.warp(block.timestamp + waitPeriod); // Advance time
         uRegistry.approveContractChange(id); // Approve contract change
-        (address contractAddr, , , , , ) = uRegistry.getEntry(id);
+        (address contractAddr,,,,,) = uRegistry.getEntry(id);
         assertEq(contractAddr, newAddress); // Check if contract address has been changed
-        (, , , bool inContractChange2, , ) = uRegistry.getEntry(id); // Get the updated entry
+        (,,, bool inContractChange2,,) = uRegistry.getEntry(id); // Get the updated entry
         assertFalse(inContractChange2); // Check if inContractChange is false
     }
 
@@ -67,10 +68,11 @@ contract URegistryTest is Test, UAuth {
         assertEq(uRegistry.getAddr(id), getTest); // Check if getAddr retrieves the correct address
         assertTrue(uRegistry.isRegistered(id)); // Check if isRegistered returns true
 
-        
         bytes4 thirdId = uRegistry.addNewThirdPartyContract(third);
         assertEq(uRegistry.getAddr(thirdId), third); // Check if getAddr retrieves the correct address for third party
         assertTrue(uRegistry.isRegistered(thirdId)); // Check if isRegistered returns true for third party
-    }
 
+        assertTrue(uRegistry.isVerifiedContract(id));
+        assertFalse(uRegistry.isVerifiedContract(thirdId));
+    }
 }

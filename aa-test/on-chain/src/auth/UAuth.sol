@@ -4,14 +4,6 @@ pragma solidity ^0.8.13;
 contract UAuth {
     address private _owner;
 
-    struct Writer {
-        address writer;
-        address contractAddress;
-        bool exists;
-    }
-
-    mapping(bytes4 => Writer) writers;
-
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event thirdPartyWriterwnershipTransferred(bytes4 contractId, address indexed previousOwner, address indexed newOwner);
 
