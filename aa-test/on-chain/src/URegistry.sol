@@ -55,6 +55,11 @@ contract URegistry is UAuth {
         }
     }
 
+    function getEntry(bytes4 _id) public view returns (address, uint256, uint256, bool, bool, bool) {
+        Entry memory entry = entries[_id];
+        return (entry.contractAddr, entry.waitPeriod, entry.changeStartTime, entry.inContractChange, entry.inWaitPeriodChange, entry.exists);
+    }
+
     function isVerifiedContract(bytes4 _id) public view returns (bool){
         return entries[_id].exists;
     }
@@ -89,7 +94,7 @@ contract URegistry is UAuth {
         bytes4 _id,
         address _contractAddr,
         uint256 _waitPeriod
-    ) public onlyOwner {
+    ) public onlyOwner returns (bytes4){
         if (entries[_id].exists){
             revert EntryAlreadyExistsError(_id);
         }
@@ -104,11 +109,10 @@ contract URegistry is UAuth {
         });
 
         emit AddNewContract(msg.sender, _id, _contractAddr, _waitPeriod);
+
+        return _id;
     }
 
-    /// @notice Reverts to the previous address immediately
-    /// @dev In case the new version has a fault, a quick way to fallback to the old contract
-    /// @param _id Id of contract
     function revertToPreviousAddress(bytes4 _id) public onlyOwner {
         if (!(entries[_id].exists)){
             revert EntryNonExistentError(_id);
@@ -123,10 +127,6 @@ contract URegistry is UAuth {
         emit RevertToPreviousAddress(msg.sender, _id, currentAddr, previousAddresses[_id]);
     }
 
-    /// @notice Starts an address change for an existing entry
-    /// @dev Can override a change that is currently in progress
-    /// @param _id Id of contract
-    /// @param _newContractAddr Address of the new contract
     function startContractChange(bytes4 _id, address _newContractAddr) public onlyOwner {
         if (!entries[_id].exists){
             revert EntryNonExistentError(_id);
@@ -143,8 +143,6 @@ contract URegistry is UAuth {
         emit StartContractChange(msg.sender, _id, entries[_id].contractAddr, _newContractAddr);
     }
 
-    /// @notice Changes new contract address, correct time must have passed
-    /// @param _id Id of contract
     function approveContractChange(bytes4 _id) public onlyOwner {
         if (!entries[_id].exists){
             revert EntryNonExistentError(_id);
@@ -167,8 +165,6 @@ contract URegistry is UAuth {
         emit ApproveContractChange(msg.sender, _id, oldContractAddr, entries[_id].contractAddr);
     }
 
-    /// @notice Cancel pending change
-    /// @param _id Id of contract
     function cancelContractChange(bytes4 _id) public onlyOwner {
         if (!entries[_id].exists){
             revert EntryNonExistentError(_id);
@@ -186,9 +182,6 @@ contract URegistry is UAuth {
         emit CancelContractChange(msg.sender, _id, oldContractAddr, entries[_id].contractAddr);
     }
 
-    /// @notice Starts the change for waitPeriod
-    /// @param _id Id of contract
-    /// @param _newWaitPeriod New wait time
     function startWaitPeriodChange(bytes4 _id, uint256 _newWaitPeriod) public onlyOwner {
         if (!entries[_id].exists){
             revert EntryNonExistentError(_id);
@@ -205,8 +198,6 @@ contract URegistry is UAuth {
         emit StartWaitPeriodChange(msg.sender, _id, _newWaitPeriod);
     }
 
-    /// @notice Changes new wait period, correct time must have passed
-    /// @param _id Id of contract
     function approveWaitPeriodChange(bytes4 _id) public onlyOwner {
         if (!entries[_id].exists){
             revert EntryNonExistentError(_id);
@@ -229,8 +220,6 @@ contract URegistry is UAuth {
         emit ApproveWaitPeriodChange(msg.sender, _id, oldWaitTime, entries[_id].waitPeriod);
     }
 
-    /// @notice Cancel wait period change
-    /// @param _id Id of contract
     function cancelWaitPeriodChange(bytes4 _id) public onlyOwner {
         if (!entries[_id].exists){
             revert EntryNonExistentError(_id);
@@ -256,31 +245,21 @@ contract URegistry is UAuth {
 
    function addNewThirdPartyContract(
         address _contractAddr
-    ) public {
-        bytes4 _id = bytes4(keccak256(abi.encodePacked(msg.sender, _contractAddr)));
+    ) public returns (bytes4){
+        bytes4 _id = bytes4(keccak256(abi.encodePacked(_contractAddr)));
 
         if (thirdPartyEntries[_id].exists){
             revert EntryAlreadyExistsError(_id);
         }
-        if (!isWriter(_id)){
-            addWriter(_contractAddr);
-        }
+
         thirdPartyEntries[_id] = ThirdPartyEntry({
             contractAddr: _contractAddr,
             exists: true
         });
 
         emit AddNewThirdPartyContract(msg.sender, _id, _contractAddr);
-    }
 
-    function setThirdPartyContract(bytes4 _id, address _newContractAddr) public onlyWriter(_id) {
-        if (!thirdPartyEntries[_id].exists){
-            revert EntryNonExistentError(_id);
-        }
-        address _existingAddress = thirdPartyEntries[_id].contractAddr;
-        thirdPartyEntries[_id].contractAddr = _newContractAddr;
-
-        emit EditThirdPartyContract(msg.sender, _id, _existingAddress, _newContractAddr);
+        return _id;
     }
 
 }

@@ -38,26 +38,4 @@ contract UAuth {
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
-
-    /*
-    Third party functions
-    */
-    modifier onlyWriter(bytes4 _contractId) {
-        require(isWriter(_contractId), "UAuth: caller is not writer");
-        _;
-    }
-    function addWriter(address _contractAddress ) public {
-        bytes4 _id = bytes4(keccak256(abi.encodePacked(msg.sender, _contractAddress)));
-        writers[_id].contractAddress = _contractAddress;
-        writers[_id].exists = true;
-    }
-    function isWriter(bytes4 _contractId) public view returns (bool) {
-        return msg.sender == writers[_contractId].writer;
-    }
-    function setWriter(bytes4 _contractId, address newOwner) public onlyWriter(_contractId) {
-        require(newOwner != address(0), "UAuth: new owner is the zero address");
-        require(writers[_contractId].exists, "Invalid _contractId");
-        emit thirdPartyWriterwnershipTransferred(_contractId, _owner, newOwner);
-        writers[_contractId].writer = newOwner;
-    }
 }
