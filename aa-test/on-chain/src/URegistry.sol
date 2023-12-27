@@ -40,8 +40,9 @@ contract URegistry is UAuth {
 
     mapping(bytes4 => Entry) public entries;
     mapping(bytes4 => ThirdPartyEntry) public thirdPartyEntries;
+    mapping(address => bool) public verifiedContracts;
+    
     mapping(bytes4 => address) public previousAddresses;
-
     mapping(bytes4 => address) public pendingAddresses;
     mapping(bytes4 => uint256) public pendingWaitTimes;
 
@@ -55,13 +56,11 @@ contract URegistry is UAuth {
         }
     }
 
-    function getEntry(bytes4 _id) public view returns (address, uint256, uint256, bool, bool, bool) {
-        Entry memory entry = entries[_id];
-        return (entry.contractAddr, entry.waitPeriod, entry.changeStartTime, entry.inContractChange, entry.inWaitPeriodChange, entry.exists);
-    }
-
     function isVerifiedContract(bytes4 _id) public view returns (bool){
         return entries[_id].exists;
+    }
+    function isVerifiedContract(address _addr) public view returns (bool){
+        return verifiedContracts[_addr];
     }
 
     function isRegistered(bytes4 _id) public view returns (bool) {
@@ -107,7 +106,7 @@ contract URegistry is UAuth {
             inWaitPeriodChange: false,
             exists: true
         });
-
+        verifiedContracts[_contractAddr] = true;
         emit AddNewContract(msg.sender, _id, _contractAddr, _waitPeriod);
 
         return _id;

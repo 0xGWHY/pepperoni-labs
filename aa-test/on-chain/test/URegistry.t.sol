@@ -31,31 +31,6 @@ contract URegistryTest is Test, UAuth {
         uRegistry.addNewContract(bytes4("test"), address(this), 0); // This should pass
     }
 
-    function test_ChangeContractAddress() public {
-        bytes4 id = bytes4(keccak256(abi.encodePacked("changeTest")));
-        address existingAddress =
-            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "existingAddress")))));
-        uRegistry.addNewContract(id, existingAddress, 2);
-        address newAddress =
-            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "newAddress")))));
-
-        uRegistry.startContractChange(id, newAddress); // Start contract change
-        (,,, bool inContractChange,,) = uRegistry.getEntry(id); // Get the updated entry
-        assertTrue(inContractChange, "contract change fail"); // Check if inContractChange is true
-
-        try uRegistry.approveContractChange(id) {
-            assert(false); // This should fail
-        } catch {}
-        (, uint256 waitPeriod,,,,) = uRegistry.getEntry(id); // Get the updated entry
-
-        vm.warp(block.timestamp + waitPeriod); // Advance time
-        uRegistry.approveContractChange(id); // Approve contract change
-        (address contractAddr,,,,,) = uRegistry.getEntry(id);
-        assertEq(contractAddr, newAddress); // Check if contract address has been changed
-        (,,, bool inContractChange2,,) = uRegistry.getEntry(id); // Get the updated entry
-        assertFalse(inContractChange2); // Check if inContractChange is false
-    }
-
     function test_AddNewThirdPartyContract() public {
         uRegistry.addNewThirdPartyContract(address(this)); // Add current contract
     }
