@@ -4,3 +4,6 @@
 [submodule "aa-test/on-chain/lib/aave-v3-core"]
 	path = aa-test/on-chain/lib/aave-v3-core
 	url = https://github.com/aave/aave-v3-core
+[submodule "aa-test/on-chain/lib/src"]
+	path = aa-test/on-chain/lib/src
+	url = https://github.com/zerodevapp/kernel
