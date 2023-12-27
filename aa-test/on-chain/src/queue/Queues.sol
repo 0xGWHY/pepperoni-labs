@@ -26,13 +26,10 @@ contract Queues {
         address manager;
         mapping(address => bool) whitelist;
         QueueType queueType;
-        bytes32 queueHash;
+        bytes4[] actions;
         uint256 fee;
         bool available;
         bool isVerified;
-    }
-    struct Action {
-        bytes4 actionId;
     }
 
     mapping(uint => Queue) queues;
@@ -50,11 +47,10 @@ contract Queues {
             }
         }
 
-        bytes32 queueHash = keccak256(abi.encodePacked(queueCount, _actions));
         Queue storage newQueue = queues[queueCount];
         newQueue.queueId = queueCount;
         newQueue.manager = _manager;
-        newQueue.queueHash = queueHash;
+        newQueue.actions = _actions;
         newQueue.fee = _fee;
         newQueue.available = true;
         newQueue.isVerified = verified;
@@ -86,10 +82,11 @@ contract Queues {
         7. setQueueVerified
     */
 
-    function setQueueHash(uint _queueId, bytes4[] calldata _actions) public onlyManager(_queueId) {
+    function setQueueActions(uint _queueId, bytes4[] calldata _actions) public onlyManager(_queueId) {
         if(_actions.length > 0){
             Queue storage queue = queues[_queueId];
-            queue.queueHash = keccak256(abi.encodePacked(_actions));
+            queue.actions = _actions;
+            verifyActions(_queueId);
         }
     }
 
@@ -120,8 +117,20 @@ contract Queues {
         queue.available = _available;
     }
 
-    function setQueueVerified(uint _queueId, bool _verified) public onlyManager(_queueId) {
+    function verifyActions(uint _queueId) public {
         Queue storage queue = queues[_queueId];
-        queue.isVerified = _verified;
+
+        bytes4[] memory acts = queue.actions;
+        
+        bool verified = true;
+
+        for (uint i = 0; i < acts.length; i++) {
+            if (!uRegistry.isVerifiedContract(acts[i])) {
+                verified = false;
+                break;
+            }
+        }
+
+        queue.isVerified = verified;
     }
 }
