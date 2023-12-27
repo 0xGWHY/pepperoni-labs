@@ -4,7 +4,6 @@ out = "out"
 libs = ["lib"]
 gas_reports = ["*"]
 
-
 [rpc_endpoints]
 sepolia = "${SEPOLIA_HTTP}"
 

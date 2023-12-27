@@ -31,6 +31,9 @@ contract Queues {
         bool available;
         bool isVerified;
     }
+    struct Action {
+        bytes4 actionId;
+    }
 
     mapping(uint => Queue) queues;
 
