@@ -8,7 +8,7 @@ contract Queues {
 
     modifier onlyManager(uint _queueId) {
         require(queues[_queueId].queueId != 0, "Queue does not exist");
-        require(msg.sender == queues[_queueId].manager, "Only the admin can perform this operation");
+        require(msg.sender == queues[_queueId].manager, "Only the manager can perform this operation");
         _;
     }
 
@@ -62,15 +62,19 @@ contract Queues {
         queueCount++;
     }
 
+    function getQueue(uint _queueId) public view returns (uint, address, QueueType, bytes4[] memory, uint256, bool, bool) {
+        Queue storage queue = queues[_queueId];
+        return (queue.queueId, queue.manager, queue.queueType, queue.actions, queue.fee, queue.available, queue.isVerified);
+    }
+
     function queueAccessCheck(uint queueId, address user) public view {
         require(queues[queueId].queueId != 0, "Invalid queue id");
-        require(queues[queueId].available, "This queue has been deactivated by the admin");
+        require(queues[queueId].available, "This queue has been deactivated by the manager");
         if(queues[queueId].queueType == QueueType.PRIVATE_QUEUE){
             require(queues[queueId].whitelist[user], "You do not have access to this Queue");
         }
     }
 
-    
     /*
     Only manager functions
         1. setQueueHash
@@ -86,7 +90,7 @@ contract Queues {
         if(_actions.length > 0){
             Queue storage queue = queues[_queueId];
             queue.actions = _actions;
-            verifyActions(_queueId);
+            verificationCheck(_queueId);
         }
     }
 
@@ -117,7 +121,7 @@ contract Queues {
         queue.available = _available;
     }
 
-    function verifyActions(uint _queueId) public {
+    function verificationCheck(uint _queueId) public {
         Queue storage queue = queues[_queueId];
 
         bytes4[] memory acts = queue.actions;
