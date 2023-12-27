@@ -9,3 +9,6 @@
 	url = https://github.com/zerodevapp/kernel.git
 [submodule "lib/kernel.git"]
 	branch = main
+[submodule "aa-test/on-chain/lib/account-abstraction"]
+	path = aa-test/on-chain/lib/account-abstraction
+	url = https://github.com/eth-infinitism/account-abstraction
