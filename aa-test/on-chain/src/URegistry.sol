@@ -157,6 +157,8 @@ contract URegistry is UAuth {
         entries[_id].contractAddr = pendingAddresses[_id];
         entries[_id].inContractChange = false;
         entries[_id].changeStartTime = 0;
+        verifiedContracts[oldContractAddr] = false;
+        verifiedContracts[pendingAddresses[_id]] = true;
 
         pendingAddresses[_id] = address(0);
         previousAddresses[_id] = oldContractAddr;

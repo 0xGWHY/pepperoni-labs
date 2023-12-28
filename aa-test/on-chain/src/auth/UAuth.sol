@@ -5,7 +5,6 @@ contract UAuth {
     address private _owner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-    event thirdPartyWriterwnershipTransferred(bytes4 contractId, address indexed previousOwner, address indexed newOwner);
 
     constructor() {
         _owner = msg.sender;
@@ -21,11 +20,11 @@ contract UAuth {
         _;
     }
 
-    function isOwner() public view returns (bool) {
+    function isOwner() internal view returns (bool) {
         return msg.sender == _owner;
     }
 
-    function transferOwnership(address newOwner) public onlyOwner {
+    function transferOwnership(address newOwner) external onlyOwner {
         require(newOwner != address(0), "UAuth: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;

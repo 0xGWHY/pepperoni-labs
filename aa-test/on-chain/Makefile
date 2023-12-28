@@ -6,7 +6,7 @@ deploy:
 	@forge fmt
 	@forge script script/Deploy.s.sol:DeployScript --rpc-url $$RPC_URL --etherscan-api-key $$ETHERSCAN_KEY --broadcast --verify -vvvv
 
-deploy-testnet:
+deploy-sepolia:
 	@echo "Deploying..."
 	@forge fmt
 	@forge script script/Deploy.s.sol:DeployScript --rpc-url $$SEPOLIA_HTTP --etherscan-api-key $$ETHERSCAN_KEY --broadcast --verify -vvvv
