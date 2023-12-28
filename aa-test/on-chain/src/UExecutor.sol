@@ -23,18 +23,25 @@ contract UExecutor is UAuth, UHelper {
         }
     }
 
-    function _executeActions(address[] memory actions, bytes[] calldata params, uint256[] memory paramMapping) internal {
-
-        bytes32[] memory returnValues = new bytes32[](actions.length);
-           
-            for (uint256 i = 0; i < actions.length; ++i) {
-                returnValues[i] = _executeAction(params, paramMapping, i, returnValues);
-            }
-        
+    function _flashLoanFirst(uint256 _queueId, address _firstAction, bytes[] calldata _params) internal {
 
     }
 
-        function _executeAction(
+    function _executeActions(address[] memory actions, bytes[] calldata params, uint256[] memory paramMapping) internal {
+        bytes32[] memory returnValues = new bytes32[](actions.length);
+        for (uint256 i = 0; i < actions.length; ++i) {
+            returnValues[i] = _executeAction(params, paramMapping, i, returnValues);
+        }
+    }
+
+    function _executeActionsFromFlashLoan(address[] memory actions, bytes[] calldata params, uint256[] memory paramMapping) internal {
+        bytes32[] memory returnValues = new bytes32[](actions.length);
+        for (uint256 i = 0; i < actions.length; ++i) {
+            returnValues[i] = _executeAction(params, paramMapping, i, returnValues);
+        }
+    }
+
+    function _executeAction(
         bytes[] calldata _params,
         uint256[] memory _paramMapping,
         uint256 _index,
@@ -53,10 +60,6 @@ contract UExecutor is UAuth, UHelper {
         //         _returnValues
         //     )
         // );
-    }
-
-    function _flashLoanFirst(uint256 _queueId, address _firstAction, bytes[] calldata _params) internal {
-
     }
 
     function _isFL(address _firstAction) internal pure returns (bool) {
