@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "../URegistry.sol";
 import {UAuth} from "../auth/UAuth.sol";
 
-contract Queues is UAuth {
+contract QueueVault is UAuth {
     URegistry uRegistry;
 
     modifier onlyManager(uint _queueId) {
@@ -28,6 +28,7 @@ contract Queues is UAuth {
         mapping(address => bool) whitelist;
         QueueType queueType;
         bytes4[] actions;
+        uint256[] paramMapping;
         uint256 fee;
         bool available;
         bool isVerified;
@@ -37,7 +38,7 @@ contract Queues is UAuth {
 
     uint public queueCount = 1;
     
-    function createQueue(address _manager, bytes4[] calldata _actions, uint256 _fee, address[] calldata _whitelist) public payable {
+    function createQueue(address _manager, bytes4[] calldata _actions, uint256[] calldata _paramMapping, uint256 _fee, address[] calldata _whitelist) public payable {
 
         bool verified = true;
 
@@ -52,6 +53,7 @@ contract Queues is UAuth {
         newQueue.queueId = queueCount;
         newQueue.manager = _manager;
         newQueue.actions = _actions;
+        newQueue.paramMapping = _paramMapping;
         newQueue.fee = _fee;
         newQueue.available = true;
         newQueue.isVerified = verified;
@@ -63,16 +65,27 @@ contract Queues is UAuth {
         queueCount++;
     }
 
-    function getQueue(uint _queueId) public view returns (uint, address, QueueType, bytes4[] memory, uint256, bool, bool) {
+    function getFirstAction(uint _queueId) public view returns (address) {
         Queue storage queue = queues[_queueId];
-        return (queue.queueId, queue.manager, queue.queueType, queue.actions, queue.fee, queue.available, queue.isVerified);
+        return uRegistry.getAddr(queue.actions[0]);
     }
 
-    function queueAccessCheck(uint queueId, address user) public view {
+    function getActions(uint _queueId) public view returns (address[] memory, uint256[] memory) {
+        Queue storage queue = queues[_queueId];
+        address[] memory actions = new address[](queue.actions.length);
+        uint256[] memory paramMapping = new uint256[](queue.paramMapping.length);
+        for(uint i = 0; i < queue.actions.length; i++) {
+            actions[i] = uRegistry.getAddr(queue.actions[i]);
+            paramMapping[i] = queue.paramMapping[i];
+        } 
+        return (actions, paramMapping);
+    }
+
+    function queueAccessCheck(uint queueId) public view {
         require(queues[queueId].queueId != 0, "Invalid queue id");
         require(queues[queueId].available, "This queue has been deactivated by the manager");
         if(queues[queueId].queueType == QueueType.PRIVATE_QUEUE){
-            require(queues[queueId].whitelist[user], "You do not have access to this Queue");
+            require(queues[queueId].whitelist[msg.sender], "You do not have access to this Queue");
         }
     }
 
@@ -87,10 +100,11 @@ contract Queues is UAuth {
         7. setQueueVerified
     */
 
-    function setQueueActions(uint _queueId, bytes4[] calldata _actions) public onlyManager(_queueId) {
+    function setQueueActions(uint _queueId, bytes4[] calldata _actions, uint256[] calldata _paramMapping) public onlyManager(_queueId) {
         if(_actions.length > 0){
             Queue storage queue = queues[_queueId];
             queue.actions = _actions;
+            queue.paramMapping = _paramMapping;
             verificationCheck(_queueId);
         }
     }

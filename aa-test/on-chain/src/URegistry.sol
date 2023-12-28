@@ -122,6 +122,8 @@ contract URegistry is UAuth {
 
         address currentAddr = entries[_id].contractAddr;
         entries[_id].contractAddr = previousAddresses[_id];
+        verifiedContracts[currentAddr] = false;
+        verifiedContracts[previousAddresses[_id]] = true;
 
         emit RevertToPreviousAddress(msg.sender, _id, currentAddr, previousAddresses[_id]);
     }
