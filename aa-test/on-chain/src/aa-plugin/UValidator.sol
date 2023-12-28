@@ -7,7 +7,6 @@ import {URegistry} from "../URegistry.sol";
 
 contract UValidator is UAuth {
 
-
     URegistry uRegistry;
 
         constructor(address registryAddress) {

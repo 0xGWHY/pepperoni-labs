@@ -100,33 +100,33 @@ function App() {
     // 0x3330880e
     try {
       sended = await ecdsaProvider?.sendUserOperation([
+        // {
+        //   target: "0xfda9c831090Eb4E006B54846C435dD333856001E",
+        //   data: encodeFunctionData({
+        //     abi: kernelABI,
+        //     functionName: "setExecution",
+        //     args: ["0x1e4a7e92", "0x02049cfD749543B5B479FA9039304936B564dF54", "0x17f4fFEe3F5efFe0a7325645d92B8B8C7c46A445", 0, 0, "0x"],
+        //   }),
+        //   value: parseEther("0"),
+        // },
+        // {
+        //   // activate
+        //   target: "0x17f4fFEe3F5efFe0a7325645d92B8B8C7c46A445",
+        //   data: "0xe6d8145e",
+        // },
         {
-          // approve dai
-          target: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
-          data: "0x095ea7b3000000000000000000000000c532a74256d3db42d0bf7a0400fefdbad7694008ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-          value: parseEther("0"),
+          // deactivate
+          target: "0x17f4fFEe3F5efFe0a7325645d92B8B8C7c46A445",
+          data: "0xfaaf82e2",
         },
-        {
-          target: "0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008",
-          data: encodeFunctionData({
-            abi: UniswapV2Router02ABI,
-            functionName: "swapExactTokensForETH",
-            args: [
-              BigInt("126571435318077224385"),
-              BigInt("0"),
-              ["0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357", "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"],
-              "0xfda9c831090Eb4E006B54846C435dD333856001E",
-              BigInt(1703175598),
-            ],
-          }),
-          value: parseEther("0"),
-        },
-        {
-          // approve dai
-          target: "0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357",
-          data: "0x095ea7b3000000000000000000000000c532a74256d3db42d0bf7a0400fefdbad76940080000000000000000000000000000000000000000000000000000000000000000",
-          value: parseEther("0"),
-        },
+        // {
+        //   target: "0xfda9c831090Eb4E006B54846C435dD333856001E",
+        //   data: encodeFunctionData({
+        //     abi: ['function uExecuteDelegateCall(address,bytes)'],
+        //     functionName: "uExecuteDelegateCall",
+        //     args: [""],
+        //   }),
+        // }
       ]);
     } catch (error) {
       toast.dismiss(toastId);
