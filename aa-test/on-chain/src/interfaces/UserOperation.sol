@@ -9,13 +9,17 @@ pragma solidity ^0.8.12;
  * @param callData              - The method call to execute on this account.
  * @param callGasLimit          - The gas limit passed to the callData method call.
  * @param verificationGasLimit  - Gas used for validateUserOp and validatePaymasterUserOp.
- * @param preVerificationGas    - Gas not calculated by the handleOps method, but added to the gas paid.
+ * @param preVerificationGas    - Gas not calculated by the handleOps method, but added to the gas
+ * paid.
  *                                Covers batch overhead.
  * @param maxFeePerGas          - Same as EIP-1559 gas parameter.
  * @param maxPriorityFeePerGas  - Same as EIP-1559 gas parameter.
- * @param paymasterAndData      - If set, this field holds the paymaster address and paymaster-specific data.
+ * @param paymasterAndData      - If set, this field holds the paymaster address and
+ * paymaster-specific data.
  *                                The paymaster will pay for the transaction instead of the sender.
- * @param signature             - Sender-verified signature over the entire request, the EntryPoint address and the chain ID.
+ * @param signature             - Sender-verified signature over the entire request, the EntryPoint
+ * address and the
+ * chain ID.
  */
 struct UserOperation {
     address sender;

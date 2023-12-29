@@ -4,23 +4,22 @@ pragma solidity ^0.8.13;
 import "src/auth/UAuth.sol";
 
 contract URegistryBackUp is UAuth {
-
     error EntryAlreadyExistsError(bytes4);
     error EntryNonExistentError(bytes4);
     error EntryNotInChangeError(bytes4);
-    error ChangeNotReadyError(uint256,uint256);
+    error ChangeNotReadyError(uint256, uint256);
     error EmptyPrevAddrError(bytes4);
     error AlreadyInContractChangeError(bytes4);
     error AlreadyInWaitPeriodChangeError(bytes4);
 
-    event AddNewContract(address,bytes4,address,uint256);
-    event RevertToPreviousAddress(address,bytes4,address,address);
-    event StartContractChange(address,bytes4,address,address);
-    event ApproveContractChange(address,bytes4,address,address);
-    event CancelContractChange(address,bytes4,address,address);
-    event StartWaitPeriodChange(address,bytes4,uint256);
-    event ApproveWaitPeriodChange(address,bytes4,uint256,uint256);
-    event CancelWaitPeriodChange(address,bytes4,uint256,uint256);
+    event AddNewContract(address, bytes4, address, uint256);
+    event RevertToPreviousAddress(address, bytes4, address, address);
+    event StartContractChange(address, bytes4, address, address);
+    event ApproveContractChange(address, bytes4, address, address);
+    event CancelContractChange(address, bytes4, address, address);
+    event StartWaitPeriodChange(address, bytes4, uint256);
+    event ApproveWaitPeriodChange(address, bytes4, uint256, uint256);
+    event CancelWaitPeriodChange(address, bytes4, uint256, uint256);
 
     struct Entry {
         address contractAddr;
@@ -70,8 +69,11 @@ contract URegistryBackUp is UAuth {
         bytes4 _id,
         address _contractAddr,
         uint256 _waitPeriod
-    ) public onlyOwner {
-        if (entries[_id].exists){
+    )
+        public
+        onlyOwner
+    {
+        if (entries[_id].exists) {
             revert EntryAlreadyExistsError(_id);
         }
 
@@ -91,10 +93,10 @@ contract URegistryBackUp is UAuth {
     /// @dev In case the new version has a fault, a quick way to fallback to the old contract
     /// @param _id Id of contract
     function revertToPreviousAddress(bytes4 _id) public onlyOwner {
-        if (!(entries[_id].exists)){
+        if (!(entries[_id].exists)) {
             revert EntryNonExistentError(_id);
         }
-        if (previousAddresses[_id] == address(0)){
+        if (previousAddresses[_id] == address(0)) {
             revert EmptyPrevAddrError(_id);
         }
 
@@ -109,10 +111,10 @@ contract URegistryBackUp is UAuth {
     /// @param _id Id of contract
     /// @param _newContractAddr Address of the new contract
     function startContractChange(bytes4 _id, address _newContractAddr) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (entries[_id].inWaitPeriodChange){
+        if (entries[_id].inWaitPeriodChange) {
             revert AlreadyInWaitPeriodChangeError(_id);
         }
 
@@ -127,14 +129,17 @@ contract URegistryBackUp is UAuth {
     /// @notice Changes new contract address, correct time must have passed
     /// @param _id Id of contract
     function approveContractChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inContractChange){
+        if (!entries[_id].inContractChange) {
             revert EntryNotInChangeError(_id);
         }
-        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)){// solhint-disable-line
-            revert ChangeNotReadyError(block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod));
+        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)) {
+            // solhint-disable-line
+            revert ChangeNotReadyError(
+                block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod)
+            );
         }
 
         address oldContractAddr = entries[_id].contractAddr;
@@ -151,10 +156,10 @@ contract URegistryBackUp is UAuth {
     /// @notice Cancel pending change
     /// @param _id Id of contract
     function cancelContractChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inContractChange){
+        if (!entries[_id].inContractChange) {
             revert EntryNotInChangeError(_id);
         }
 
@@ -171,10 +176,10 @@ contract URegistryBackUp is UAuth {
     /// @param _id Id of contract
     /// @param _newWaitPeriod New wait time
     function startWaitPeriodChange(bytes4 _id, uint256 _newWaitPeriod) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (entries[_id].inContractChange){
+        if (entries[_id].inContractChange) {
             revert AlreadyInContractChangeError(_id);
         }
 
@@ -189,19 +194,22 @@ contract URegistryBackUp is UAuth {
     /// @notice Changes new wait period, correct time must have passed
     /// @param _id Id of contract
     function approveWaitPeriodChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inWaitPeriodChange){
+        if (!entries[_id].inWaitPeriodChange) {
             revert EntryNotInChangeError(_id);
         }
-        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)){ // solhint-disable-line
-            revert ChangeNotReadyError(block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod));
+        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)) {
+            // solhint-disable-line
+            revert ChangeNotReadyError(
+                block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod)
+            );
         }
 
         uint256 oldWaitTime = entries[_id].waitPeriod;
         entries[_id].waitPeriod = pendingWaitTimes[_id];
-        
+
         entries[_id].inWaitPeriodChange = false;
         entries[_id].changeStartTime = 0;
 
@@ -213,10 +221,10 @@ contract URegistryBackUp is UAuth {
     /// @notice Cancel wait period change
     /// @param _id Id of contract
     function cancelWaitPeriodChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inWaitPeriodChange){
+        if (!entries[_id].inWaitPeriodChange) {
             revert EntryNotInChangeError(_id);
         }
 
@@ -228,5 +236,4 @@ contract URegistryBackUp is UAuth {
 
         emit CancelWaitPeriodChange(msg.sender, _id, oldWaitPeriod, entries[_id].waitPeriod);
     }
-
 }

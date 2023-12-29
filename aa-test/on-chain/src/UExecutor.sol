@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {UAuth} from "./auth/UAuth.sol";
-import {URegistry} from "./URegistry.sol";
-import {UHelper} from "./utils/UHelper.sol";
-import {QueueVault} from "./queue/QueueVault.sol";
-import {ActionBase} from "./actions/ActionBase.sol";
+import { UAuth } from "./auth/UAuth.sol";
+import { URegistry } from "./URegistry.sol";
+import { UHelper } from "./utils/UHelper.sol";
+import { QueueVault } from "./queue/QueueVault.sol";
+import { ActionBase } from "./actions/ActionBase.sol";
 
 contract UExecutor is UAuth, UHelper {
     URegistry public constant uRegistry = URegistry(UREGISTRY_ADDRESS);
@@ -18,23 +18,40 @@ contract UExecutor is UAuth, UHelper {
         if (_isFL(firstAction)) {
             _flashLoanFirst(_queueId, firstAction, _params);
         } else {
-             (address[] memory actions, uint256[] memory paramMapping) = queueVault.getActions(_queueId);
+            (address[] memory actions, uint256[] memory paramMapping) =
+                queueVault.getActions(_queueId);
             _executeActions(actions, _params, paramMapping);
         }
     }
 
-    function _flashLoanFirst(uint256 _queueId, address _firstAction, bytes[] calldata _params) internal {
+    function _flashLoanFirst(
+        uint256 _queueId,
+        address _firstAction,
+        bytes[] calldata _params
+    )
+        internal
+    { }
 
-    }
-
-    function _executeActions(address[] memory actions, bytes[] calldata params, uint256[] memory paramMapping) internal {
+    function _executeActions(
+        address[] memory actions,
+        bytes[] calldata params,
+        uint256[] memory paramMapping
+    )
+        internal
+    {
         bytes32[] memory returnValues = new bytes32[](actions.length);
         for (uint256 i = 0; i < actions.length; ++i) {
             returnValues[i] = _executeAction(params, paramMapping, i, returnValues);
         }
     }
 
-    function _executeActionsFromFlashLoan(address[] memory actions, bytes[] calldata params, uint256[] memory paramMapping) internal {
+    function _executeActionsFromFlashLoan(
+        address[] memory actions,
+        bytes[] calldata params,
+        uint256[] memory paramMapping
+    )
+        internal
+    {
         bytes32[] memory returnValues = new bytes32[](actions.length);
         for (uint256 i = 0; i < actions.length; ++i) {
             returnValues[i] = _executeAction(params, paramMapping, i, returnValues);
@@ -46,8 +63,10 @@ contract UExecutor is UAuth, UHelper {
         uint256[] memory _paramMapping,
         uint256 _index,
         bytes32[] memory _returnValues
-    ) internal returns (bytes32 response) {
-
+    )
+        internal
+        returns (bytes32 response)
+    {
         // address actionAddr = registry.getAddr(_currRecipe.actionIds[_index]);
 
         // response = IDSProxy(address(this)).execute(

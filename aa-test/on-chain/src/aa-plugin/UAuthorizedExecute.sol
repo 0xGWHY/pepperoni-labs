@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {UAuth} from "../auth/UAuth.sol";
+import { UAuth } from "../auth/UAuth.sol";
 
 contract UAuthorizedExecute is UAuth {
     function uExecuteDelegateCall(address to, bytes memory data) external payable {

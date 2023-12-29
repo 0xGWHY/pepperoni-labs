@@ -4,26 +4,25 @@ pragma solidity ^0.8.13;
 import "./auth/UAuth.sol";
 
 contract URegistry is UAuth {
-
     error EntryAlreadyExistsError(bytes4);
     error EntryNonExistentError(bytes4);
     error EntryNotInChangeError(bytes4);
-    error ChangeNotReadyError(uint256,uint256);
+    error ChangeNotReadyError(uint256, uint256);
     error EmptyPrevAddrError(bytes4);
     error AlreadyInContractChangeError(bytes4);
     error AlreadyInWaitPeriodChangeError(bytes4);
 
-    event AddNewContract(address,bytes4,address,uint256);
-    event RevertToPreviousAddress(address,bytes4,address,address);
-    event StartContractChange(address,bytes4,address,address);
-    event ApproveContractChange(address,bytes4,address,address);
-    event CancelContractChange(address,bytes4,address,address);
-    event StartWaitPeriodChange(address,bytes4,uint256);
-    event ApproveWaitPeriodChange(address,bytes4,uint256,uint256);
-    event CancelWaitPeriodChange(address,bytes4,uint256,uint256);
+    event AddNewContract(address, bytes4, address, uint256);
+    event RevertToPreviousAddress(address, bytes4, address, address);
+    event StartContractChange(address, bytes4, address, address);
+    event ApproveContractChange(address, bytes4, address, address);
+    event CancelContractChange(address, bytes4, address, address);
+    event StartWaitPeriodChange(address, bytes4, uint256);
+    event ApproveWaitPeriodChange(address, bytes4, uint256, uint256);
+    event CancelWaitPeriodChange(address, bytes4, uint256, uint256);
 
-    event AddNewThirdPartyContract(address,bytes4,address);
-    event EditThirdPartyContract(address,bytes4,address,address);
+    event AddNewThirdPartyContract(address, bytes4, address);
+    event EditThirdPartyContract(address, bytes4, address, address);
 
     struct Entry {
         address contractAddr;
@@ -33,6 +32,7 @@ contract URegistry is UAuth {
         bool inWaitPeriodChange;
         bool exists;
     }
+
     struct ThirdPartyEntry {
         address contractAddr;
         bool exists;
@@ -41,7 +41,7 @@ contract URegistry is UAuth {
     mapping(bytes4 => Entry) public entries;
     mapping(bytes4 => ThirdPartyEntry) public thirdPartyEntries;
     mapping(address => bool) public verifiedContracts;
-    
+
     mapping(bytes4 => address) public previousAddresses;
     mapping(bytes4 => address) public pendingAddresses;
     mapping(bytes4 => uint256) public pendingWaitTimes;
@@ -56,10 +56,11 @@ contract URegistry is UAuth {
         }
     }
 
-    function isVerifiedContract(bytes4 _id) public view returns (bool){
+    function isVerifiedContract(bytes4 _id) public view returns (bool) {
         return entries[_id].exists;
     }
-    function isVerifiedContract(address _addr) public view returns (bool){
+
+    function isVerifiedContract(address _addr) public view returns (bool) {
         return verifiedContracts[_addr];
     }
 
@@ -93,8 +94,12 @@ contract URegistry is UAuth {
         bytes4 _id,
         address _contractAddr,
         uint256 _waitPeriod
-    ) public onlyOwner returns (bytes4){
-        if (entries[_id].exists){
+    )
+        public
+        onlyOwner
+        returns (bytes4)
+    {
+        if (entries[_id].exists) {
             revert EntryAlreadyExistsError(_id);
         }
 
@@ -113,10 +118,10 @@ contract URegistry is UAuth {
     }
 
     function revertToPreviousAddress(bytes4 _id) public onlyOwner {
-        if (!(entries[_id].exists)){
+        if (!(entries[_id].exists)) {
             revert EntryNonExistentError(_id);
         }
-        if (previousAddresses[_id] == address(0)){
+        if (previousAddresses[_id] == address(0)) {
             revert EmptyPrevAddrError(_id);
         }
 
@@ -129,10 +134,10 @@ contract URegistry is UAuth {
     }
 
     function startContractChange(bytes4 _id, address _newContractAddr) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (entries[_id].inWaitPeriodChange){
+        if (entries[_id].inWaitPeriodChange) {
             revert AlreadyInWaitPeriodChangeError(_id);
         }
 
@@ -145,14 +150,17 @@ contract URegistry is UAuth {
     }
 
     function approveContractChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inContractChange){
+        if (!entries[_id].inContractChange) {
             revert EntryNotInChangeError(_id);
         }
-        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)){// solhint-disable-line
-            revert ChangeNotReadyError(block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod));
+        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)) {
+            // solhint-disable-line
+            revert ChangeNotReadyError(
+                block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod)
+            );
         }
 
         address oldContractAddr = entries[_id].contractAddr;
@@ -169,10 +177,10 @@ contract URegistry is UAuth {
     }
 
     function cancelContractChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inContractChange){
+        if (!entries[_id].inContractChange) {
             revert EntryNotInChangeError(_id);
         }
 
@@ -186,10 +194,10 @@ contract URegistry is UAuth {
     }
 
     function startWaitPeriodChange(bytes4 _id, uint256 _newWaitPeriod) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (entries[_id].inContractChange){
+        if (entries[_id].inContractChange) {
             revert AlreadyInContractChangeError(_id);
         }
 
@@ -202,19 +210,22 @@ contract URegistry is UAuth {
     }
 
     function approveWaitPeriodChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inWaitPeriodChange){
+        if (!entries[_id].inWaitPeriodChange) {
             revert EntryNotInChangeError(_id);
         }
-        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)){ // solhint-disable-line
-            revert ChangeNotReadyError(block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod));
+        if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)) {
+            // solhint-disable-line
+            revert ChangeNotReadyError(
+                block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod)
+            );
         }
 
         uint256 oldWaitTime = entries[_id].waitPeriod;
         entries[_id].waitPeriod = pendingWaitTimes[_id];
-        
+
         entries[_id].inWaitPeriodChange = false;
         entries[_id].changeStartTime = 0;
 
@@ -224,10 +235,10 @@ contract URegistry is UAuth {
     }
 
     function cancelWaitPeriodChange(bytes4 _id) public onlyOwner {
-        if (!entries[_id].exists){
+        if (!entries[_id].exists) {
             revert EntryNonExistentError(_id);
         }
-        if (!entries[_id].inWaitPeriodChange){
+        if (!entries[_id].inWaitPeriodChange) {
             revert EntryNotInChangeError(_id);
         }
 
@@ -246,23 +257,17 @@ contract URegistry is UAuth {
         2. setThirdPartyContract
     */
 
-   function addNewThirdPartyContract(
-        address _contractAddr
-    ) public returns (bytes4){
+    function addNewThirdPartyContract(address _contractAddr) public returns (bytes4) {
         bytes4 _id = bytes4(keccak256(abi.encodePacked(_contractAddr)));
 
-        if (thirdPartyEntries[_id].exists){
+        if (thirdPartyEntries[_id].exists) {
             revert EntryAlreadyExistsError(_id);
         }
 
-        thirdPartyEntries[_id] = ThirdPartyEntry({
-            contractAddr: _contractAddr,
-            exists: true
-        });
+        thirdPartyEntries[_id] = ThirdPartyEntry({ contractAddr: _contractAddr, exists: true });
 
         emit AddNewThirdPartyContract(msg.sender, _id, _contractAddr);
 
         return _id;
     }
-
 }

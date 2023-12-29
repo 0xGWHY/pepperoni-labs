@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Test} from "forge-std/Test.sol";
-import {URegistry} from "../src/URegistry.sol";
-import {UAuth} from "../src/auth/UAuth.sol";
+import { Test } from "forge-std/Test.sol";
+import { URegistry } from "../src/URegistry.sol";
+import { UAuth } from "../src/auth/UAuth.sol";
 
 contract URegistryTest is Test, UAuth {
     URegistry public uRegistry;
@@ -14,12 +14,22 @@ contract URegistryTest is Test, UAuth {
 
     function setUp() public {
         uRegistry = new URegistry();
-        stranger = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "stranger")))));
-        entry = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "entry")))));
-        thirdPartyEntry =
-            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "thirdPartyEntry")))));
-        randomContract =
-            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "randomContract")))));
+        stranger = address(
+            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "stranger"))))
+        );
+        entry = address(
+            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "entry"))))
+        );
+        thirdPartyEntry = address(
+            uint160(
+                uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "thirdPartyEntry")))
+            )
+        );
+        randomContract = address(
+            uint160(
+                uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "randomContract")))
+            )
+        );
     }
 
     function testFail_NonOwner() public {
@@ -36,16 +46,22 @@ contract URegistryTest is Test, UAuth {
     }
 
     function test_GetAddrAndIsRegistered() public {
-        address getTest = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "getTest")))));
-        address third = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "third")))));
+        address getTest = address(
+            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "getTest"))))
+        );
+        address third = address(
+            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "third"))))
+        );
         bytes4 id = bytes4(keccak256(abi.encodePacked("getTest")));
         uRegistry.addNewContract(id, getTest, 0);
         assertEq(uRegistry.getAddr(id), getTest); // Check if getAddr retrieves the correct address
         assertTrue(uRegistry.isRegistered(id)); // Check if isRegistered returns true
 
         bytes4 thirdId = uRegistry.addNewThirdPartyContract(third);
-        assertEq(uRegistry.getAddr(thirdId), third); // Check if getAddr retrieves the correct address for third party
-        assertTrue(uRegistry.isRegistered(thirdId)); // Check if isRegistered returns true for third party
+        assertEq(uRegistry.getAddr(thirdId), third); // Check if getAddr retrieves the correct
+            // address for third party
+        assertTrue(uRegistry.isRegistered(thirdId)); // Check if isRegistered returns true for third
+            // party
 
         assertTrue(uRegistry.isVerifiedContract(id));
         assertFalse(uRegistry.isVerifiedContract(thirdId));
