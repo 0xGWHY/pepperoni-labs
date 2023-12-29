@@ -14,22 +14,12 @@ contract URegistryTest is Test, UAuth {
 
     function setUp() public {
         uRegistry = new URegistry();
-        stranger = address(
-            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "stranger"))))
-        );
-        entry = address(
-            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "entry"))))
-        );
-        thirdPartyEntry = address(
-            uint160(
-                uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "thirdPartyEntry")))
-            )
-        );
-        randomContract = address(
-            uint160(
-                uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "randomContract")))
-            )
-        );
+        stranger = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "stranger")))));
+        entry = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "entry")))));
+        thirdPartyEntry =
+            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "thirdPartyEntry")))));
+        randomContract =
+            address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "randomContract")))));
     }
 
     function testFail_NonOwner() public {
@@ -46,12 +36,8 @@ contract URegistryTest is Test, UAuth {
     }
 
     function test_GetAddrAndIsRegistered() public {
-        address getTest = address(
-            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "getTest"))))
-        );
-        address third = address(
-            uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "third"))))
-        );
+        address getTest = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "getTest")))));
+        address third = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "third")))));
         bytes4 id = bytes4(keccak256(abi.encodePacked("getTest")));
         uRegistry.addNewContract(id, getTest, 0);
         assertEq(uRegistry.getAddr(id), getTest); // Check if getAddr retrieves the correct address

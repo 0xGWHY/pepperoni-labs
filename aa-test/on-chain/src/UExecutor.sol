@@ -18,45 +18,31 @@ contract UExecutor is UAuth, UHelper {
         if (_isFL(firstAction)) {
             _flashLoanFirst(_queueId, firstAction, _params);
         } else {
-            (address[] memory actions, uint256[] memory paramMapping) =
-                queueVault.getActions(_queueId);
-            _executeActions(actions, _params, paramMapping);
+            (address[] memory actions, uint256[] memory paramMapping) = queueVault.getActions(_queueId);
+            
+            bytes32[] memory returnValues = new bytes32[](actions.length);
+
+            for (uint256 i = 0; i < actions.length; ++i) {
+                returnValues[i] = _executeAction(_params, paramMapping, i, returnValues);
+            }
         }
     }
 
-    function _flashLoanFirst(
-        uint256 _queueId,
-        address _firstAction,
-        bytes[] calldata _params
-    )
-        internal
-    { }
+    function executeQueueFromFlashLoan(uint256 _queueId, bytes[] calldata _params, bytes32 debt) public {
+        QueueVault queueVault = QueueVault(uRegistry.getAddr(bytes4(keccak256("QueueVault"))));
+        queueVault.queueAccessCheck(_queueId);
 
-    function _executeActions(
-        address[] memory actions,
-        bytes[] calldata params,
-        uint256[] memory paramMapping
-    )
-        internal
-    {
+        (address[] memory actions, uint256[] memory paramMapping) = queueVault.getActions(_queueId);
+
         bytes32[] memory returnValues = new bytes32[](actions.length);
-        for (uint256 i = 0; i < actions.length; ++i) {
-            returnValues[i] = _executeAction(params, paramMapping, i, returnValues);
+        returnValues[0] = debt;
+
+        for (uint256 i = 1; i < actions.length; ++i) {
+            returnValues[i] = _executeAction(_params, paramMapping, i, returnValues);
         }
     }
 
-    function _executeActionsFromFlashLoan(
-        address[] memory actions,
-        bytes[] calldata params,
-        uint256[] memory paramMapping
-    )
-        internal
-    {
-        bytes32[] memory returnValues = new bytes32[](actions.length);
-        for (uint256 i = 0; i < actions.length; ++i) {
-            returnValues[i] = _executeAction(params, paramMapping, i, returnValues);
-        }
-    }
+    function _flashLoanFirst(uint256 _queueId, address _firstAction, bytes[] calldata _params) internal { }
 
     function _executeAction(
         bytes[] calldata _params,
