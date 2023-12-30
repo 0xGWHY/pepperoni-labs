@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.10;
 
 import { UAuth } from "./auth/UAuth.sol";
 import { URegistry } from "./URegistry.sol";
 import { UHelper } from "./utils/UHelper.sol";
 import { QueueVault } from "./queue/QueueVault.sol";
 import { ActionBase } from "./actions/ActionBase.sol";
-import {IKernel} from "kernel.git/src/interfaces/IKernel.sol";
+import { IKernel } from "kernel.git/src/interfaces/IKernel.sol";
 
 contract UExecutor is UAuth, UHelper {
     URegistry public constant uRegistry = URegistry(UREGISTRY_ADDRESS);
@@ -19,8 +19,9 @@ contract UExecutor is UAuth, UHelper {
         if (_isFL(firstAction)) {
             _flashLoanFirst(_queueId, firstAction, _params);
         } else {
-            (address[] memory actions, uint256[] memory paramMapping) = queueVault.getActions(_queueId);
-            
+            (address[] memory actions, uint8[][] memory paramMapping) =
+                queueVault.getActions(_queueId);
+
             bytes32[] memory returnValues = new bytes32[](actions.length);
 
             for (uint256 i = 0; i < actions.length; ++i) {
@@ -29,11 +30,17 @@ contract UExecutor is UAuth, UHelper {
         }
     }
 
-    function executeQueueFromFlashLoan(uint256 _queueId, bytes[] calldata _params, bytes32 debt) public {
+    function executeQueueFromFlashLoan(
+        uint256 _queueId,
+        bytes[] calldata _params,
+        bytes32 debt
+    )
+        public
+    {
         QueueVault queueVault = QueueVault(uRegistry.getAddr(bytes4(keccak256("QueueVault"))));
         queueVault.queueAccessCheck(_queueId);
 
-        (address[] memory actions, uint256[] memory paramMapping) = queueVault.getActions(_queueId);
+        (address[] memory actions, uint8[][] memory paramMapping) = queueVault.getActions(_queueId);
 
         bytes32[] memory returnValues = new bytes32[](actions.length);
         returnValues[0] = debt;
@@ -43,12 +50,18 @@ contract UExecutor is UAuth, UHelper {
         }
     }
 
-    function _flashLoanFirst( uint256 _queueId, address _firstAction, bytes[] calldata _params) internal { }
+    function _flashLoanFirst(
+        uint256 _queueId,
+        address _firstAction,
+        bytes[] calldata _params
+    )
+        internal
+    { }
 
     function _executeAction(
         address[] memory _actions,
         bytes[] calldata _params,
-        uint256[] memory _paramMapping,
+        uint8[][] memory _paramMapping,
         uint256 _index,
         bytes32[] memory _returnValues
     )

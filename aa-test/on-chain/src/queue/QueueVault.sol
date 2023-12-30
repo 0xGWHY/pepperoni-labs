@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.10;
 
 import "../URegistry.sol";
 import { UAuth } from "../auth/UAuth.sol";
@@ -9,7 +9,9 @@ contract QueueVault is UAuth {
 
     modifier onlyManager(uint256 _queueId) {
         require(queues[_queueId].queueId != 0, "Queue does not exist");
-        require(msg.sender == queues[_queueId].manager, "Only the manager can perform this operation");
+        require(
+            msg.sender == queues[_queueId].manager, "Only the manager can perform this operation"
+        );
         _;
     }
 
@@ -20,7 +22,6 @@ contract QueueVault is UAuth {
     enum QueueType {
         PUBLIC_QUEUE, // 0
         PRIVATE_QUEUE // 1
-
     }
 
     struct Queue {
@@ -79,7 +80,11 @@ contract QueueVault is UAuth {
         return uRegistry.getAddr(queue.actions[0]);
     }
 
-    function getActions(uint256 _queueId) public view returns (address[] memory, uint8[][] memory) {
+    function getActions(uint256 _queueId)
+        public
+        view
+        returns (address[] memory, uint8[][] memory)
+    {
         Queue storage queue = queues[_queueId];
         address[] memory actions = new address[](queue.actions.length);
         uint8[][] memory paramMapping = new uint8[][](queue.paramMapping.length);
@@ -130,7 +135,13 @@ contract QueueVault is UAuth {
         queue.fee = _fee;
     }
 
-    function setQueueWhitelist(uint256 _queueId, address[] calldata _whitelist) public onlyManager(_queueId) {
+    function setQueueWhitelist(
+        uint256 _queueId,
+        address[] calldata _whitelist
+    )
+        public
+        onlyManager(_queueId)
+    {
         Queue storage queue = queues[_queueId];
         for (uint256 i = 0; i < _whitelist.length; i++) {
             queue.whitelist[_whitelist[i]] = true;

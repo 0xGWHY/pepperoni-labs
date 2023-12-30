@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.10;
 
 import { UserOperation } from "../interfaces/UserOperation.sol";
 import { UAuth } from "../auth/UAuth.sol";
@@ -54,7 +54,14 @@ contract UValidator is UAuth {
         revert NotImplemented();
     }
 
-    function validateSignature(bytes32 hash, bytes calldata signature) external view returns (ValidationData) {
+    function validateSignature(
+        bytes32 hash,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (ValidationData)
+    {
         revert NotImplemented();
     }
 
