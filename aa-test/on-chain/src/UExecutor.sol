@@ -19,8 +19,7 @@ contract UExecutor is UAuth, UHelper {
         if (_isFL(firstAction)) {
             _flashLoanFirst(_queueId, firstAction, _params);
         } else {
-            (address[] memory actions, uint8[][] memory paramMapping) =
-                queueVault.getActions(_queueId);
+            (address[] memory actions, uint8[][] memory paramMapping) = queueVault.getActions(_queueId);
 
             bytes32[] memory returnValues = new bytes32[](actions.length);
 
@@ -30,13 +29,7 @@ contract UExecutor is UAuth, UHelper {
         }
     }
 
-    function executeQueueFromFlashLoan(
-        uint256 _queueId,
-        bytes[] calldata _params,
-        bytes32 debt
-    )
-        public
-    {
+    function executeQueueFromFlashLoan(uint256 _queueId, bytes[] calldata _params, bytes32 debt) public {
         QueueVault queueVault = QueueVault(uRegistry.getAddr(bytes4(keccak256("QueueVault"))));
         queueVault.queueAccessCheck(_queueId);
 
@@ -50,13 +43,7 @@ contract UExecutor is UAuth, UHelper {
         }
     }
 
-    function _flashLoanFirst(
-        uint256 _queueId,
-        address _firstAction,
-        bytes[] calldata _params
-    )
-        internal
-    { }
+    function _flashLoanFirst(uint256 _queueId, address _firstAction, bytes[] calldata _params) internal { }
 
     function _executeAction(
         address[] memory _actions,
@@ -70,10 +57,7 @@ contract UExecutor is UAuth, UHelper {
     {
         (bool success, bytes memory data) = _actions[_index].delegatecall(
             abi.encodeWithSignature(
-                "executeAction(bytes,bytes32[],uint8[],bytes32[])",
-                _params,
-                _paramMapping,
-                _returnValues
+                "executeAction(bytes,bytes32[],uint8[],bytes32[])", _params, _paramMapping, _returnValues
             )
         );
 

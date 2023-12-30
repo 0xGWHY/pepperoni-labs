@@ -65,14 +65,7 @@ contract URegistryBackUp is UAuth {
     /// @param _id Id of contract
     /// @param _contractAddr Address of the contract
     /// @param _waitPeriod Amount of time to wait before a contract address can be changed
-    function addNewContract(
-        bytes4 _id,
-        address _contractAddr,
-        uint256 _waitPeriod
-    )
-        public
-        onlyOwner
-    {
+    function addNewContract(bytes4 _id, address _contractAddr, uint256 _waitPeriod) public onlyOwner {
         if (entries[_id].exists) {
             revert EntryAlreadyExistsError(_id);
         }
@@ -137,9 +130,7 @@ contract URegistryBackUp is UAuth {
         }
         if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)) {
             // solhint-disable-line
-            revert ChangeNotReadyError(
-                block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod)
-            );
+            revert ChangeNotReadyError(block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod));
         }
 
         address oldContractAddr = entries[_id].contractAddr;
@@ -202,9 +193,7 @@ contract URegistryBackUp is UAuth {
         }
         if (block.timestamp < (entries[_id].changeStartTime + entries[_id].waitPeriod)) {
             // solhint-disable-line
-            revert ChangeNotReadyError(
-                block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod)
-            );
+            revert ChangeNotReadyError(block.timestamp, (entries[_id].changeStartTime + entries[_id].waitPeriod));
         }
 
         uint256 oldWaitTime = entries[_id].waitPeriod;

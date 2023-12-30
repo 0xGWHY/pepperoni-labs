@@ -54,14 +54,7 @@ contract UValidator is UAuth {
         revert NotImplemented();
     }
 
-    function validateSignature(
-        bytes32 hash,
-        bytes calldata signature
-    )
-        external
-        view
-        returns (ValidationData)
-    {
+    function validateSignature(bytes32 hash, bytes calldata signature) external view returns (ValidationData) {
         revert NotImplemented();
     }
 
