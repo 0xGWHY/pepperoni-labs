@@ -6,6 +6,7 @@ import { URegistry } from "./URegistry.sol";
 import { UHelper } from "./utils/UHelper.sol";
 import { QueueVault } from "./queue/QueueVault.sol";
 import { ActionBase } from "./actions/ActionBase.sol";
+import {IKernel} from "kernel.git/src/interfaces/IKernel.sol";
 
 contract UExecutor is UAuth, UHelper {
     URegistry public constant uRegistry = URegistry(UREGISTRY_ADDRESS);
@@ -23,7 +24,7 @@ contract UExecutor is UAuth, UHelper {
             bytes32[] memory returnValues = new bytes32[](actions.length);
 
             for (uint256 i = 0; i < actions.length; ++i) {
-                returnValues[i] = _executeAction(_params, paramMapping, i, returnValues);
+                returnValues[i] = _executeAction(actions, _params, paramMapping, i, returnValues);
             }
         }
     }
@@ -38,13 +39,14 @@ contract UExecutor is UAuth, UHelper {
         returnValues[0] = debt;
 
         for (uint256 i = 1; i < actions.length; ++i) {
-            returnValues[i] = _executeAction(_params, paramMapping, i, returnValues);
+            returnValues[i] = _executeAction(actions, _params, paramMapping, i, returnValues);
         }
     }
 
-    function _flashLoanFirst(uint256 _queueId, address _firstAction, bytes[] calldata _params) internal { }
+    function _flashLoanFirst( uint256 _queueId, address _firstAction, bytes[] calldata _params) internal { }
 
     function _executeAction(
+        address[] memory _actions,
         bytes[] calldata _params,
         uint256[] memory _paramMapping,
         uint256 _index,
@@ -53,18 +55,16 @@ contract UExecutor is UAuth, UHelper {
         internal
         returns (bytes32 response)
     {
-        // address actionAddr = registry.getAddr(_currRecipe.actionIds[_index]);
+        (bool success, bytes memory data) = _actions[_index].delegatecall(
+            abi.encodeWithSignature(
+                "executeAction(bytes,bytes32[],uint8[],bytes32[])",
+                _params,
+                _paramMapping,
+                _returnValues
+            )
+        );
 
-        // response = IDSProxy(address(this)).execute(
-        //     actionAddr,
-        //     abi.encodeWithSignature(
-        //         "executeAction(bytes,bytes32[],uint8[],bytes32[])",
-        //         _currRecipe.callData[_index],
-        //         _currRecipe.subData,
-        //         _currRecipe.paramMapping[_index],
-        //         _returnValues
-        //     )
-        // );
+        require(success, "Delegatecall failed");
     }
 
     function _isFL(address _firstAction) internal pure returns (bool) {

@@ -29,7 +29,7 @@ contract QueueVault is UAuth {
         mapping(address => bool) whitelist;
         QueueType queueType;
         bytes4[] actions;
-        uint256[] paramMapping;
+        uint8[][] paramMapping;
         uint256 fee;
         bool available;
         bool isVerified;
@@ -42,7 +42,7 @@ contract QueueVault is UAuth {
     function createQueue(
         address _manager,
         bytes4[] calldata _actions,
-        uint256[] calldata _paramMapping,
+        uint8[][] calldata _paramMapping,
         uint256 _fee,
         address[] calldata _whitelist
     )
@@ -79,10 +79,10 @@ contract QueueVault is UAuth {
         return uRegistry.getAddr(queue.actions[0]);
     }
 
-    function getActions(uint256 _queueId) public view returns (address[] memory, uint256[] memory) {
+    function getActions(uint256 _queueId) public view returns (address[] memory, uint8[][] memory) {
         Queue storage queue = queues[_queueId];
         address[] memory actions = new address[](queue.actions.length);
-        uint256[] memory paramMapping = new uint256[](queue.paramMapping.length);
+        uint8[][] memory paramMapping = new uint8[][](queue.paramMapping.length);
         for (uint256 i = 0; i < queue.actions.length; i++) {
             actions[i] = uRegistry.getAddr(queue.actions[i]);
             paramMapping[i] = queue.paramMapping[i];
@@ -112,7 +112,7 @@ contract QueueVault is UAuth {
     function setQueueActions(
         uint256 _queueId,
         bytes4[] calldata _actions,
-        uint256[] calldata _paramMapping
+        uint8[][] calldata _paramMapping
     )
         public
         onlyManager(_queueId)
