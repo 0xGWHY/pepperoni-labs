@@ -5,7 +5,7 @@ import { UAuth } from "../auth/UAuth.sol";
 import { URegistry } from "../URegistry.sol";
 import { UEventLogger } from "../logger/UEventLogger.sol";
 import { UHelper } from "../utils/UHelper.sol";
-import {IKernel} from "../../lib/kernel.git/src/interfaces/IKernel.sol";
+import { IKernel } from "../../lib/kernel.git/src/interfaces/IKernel.sol";
 
 abstract contract ActionBase is UHelper {
     event ActionEvent(string indexed logName, bytes data);
