@@ -1,0 +1,3 @@
+[submodule "aa-test/on-chain/lib/openzeppelin-contracts"]
+	path = aa-test/on-chain/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
