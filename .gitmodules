@@ -1,0 +1,14 @@
+[submodule "aa-test/on-chain/lib/forge-std"]
+	path = aa-test/on-chain/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "aa-test/on-chain/lib/aave-v3-core"]
+	path = aa-test/on-chain/lib/aave-v3-core
+	url = https://github.com/aave/aave-v3-core
+[submodule "aa-test/on-chain/lib/kernel.git"]
+	path = aa-test/on-chain/lib/kernel.git
+	url = https://github.com/zerodevapp/kernel.git
+[submodule "lib/kernel.git"]
+	branch = main
+[submodule "aa-test/on-chain/lib/account-abstraction"]
+	path = aa-test/on-chain/lib/account-abstraction
+	url = https://github.com/eth-infinitism/account-abstraction
