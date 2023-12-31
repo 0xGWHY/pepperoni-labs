@@ -1,2 +1,4 @@
 kernel/=lib/kernel/src/interfaces
 openzeppelin/=lib/openzeppelin-contracts.git/contracts/interfaces
+uniswapV2Core/=lib/v2-core.git/contracts/interfaces
+uniswapV2Periphery/=lib/v2-periphery.git/contracts/interfaces
