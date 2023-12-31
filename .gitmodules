@@ -15,3 +15,6 @@
 [submodule "aa-test/on-chain/lib/openzeppelin-contracts.git"]
 	path = aa-test/on-chain/lib/openzeppelin-contracts.git
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
+[submodule "aa-test/on-chain/lib/kernel"]
+	path = aa-test/on-chain/lib/kernel
+	url = https://github.com/zerodevapp/kernel
