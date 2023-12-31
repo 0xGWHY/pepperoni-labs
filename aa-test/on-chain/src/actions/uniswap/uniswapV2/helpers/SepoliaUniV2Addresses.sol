@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 
 contract SepoliaUniV2Addresses {
-    address internal constant UNI_V2_ROUTER_ADDR = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
-    address internal constant UNI_V2_FACTORY_ADDR = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
+    address internal constant UNI_V2_ROUTER_ADDR = 0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008;
+    address internal constant UNI_V2_FACTORY_ADDR = 0x7E0987E5b3a30e3f2828572Bb659A548460a3003;
 
 }

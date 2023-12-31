@@ -11,5 +11,4 @@ contract UniV2Helper is SepoliaUniV2Addresses {
 
     IUniswapV2Factory public constant factory =
         IUniswapV2Factory(UNI_V2_FACTORY_ADDR);
-
 }
