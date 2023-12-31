@@ -3,14 +3,17 @@ pragma solidity ^0.8.10;
 
 import { UAuth } from "./auth/UAuth.sol";
 import { URegistry } from "./URegistry.sol";
-import { UHelper } from "./utils/UHelper.sol";
+import { Constants } from "./utils/Constants.sol";
 import { IQueueVault } from "./interfaces/IQueueVault.sol";
 import {IUValidator} from "./interfaces/IUValidator.sol";
 import { ActionBase } from "./actions/ActionBase.sol";
 import { IKernel } from "kernel.git/src/interfaces/IKernel.sol";
 
-contract UExecutor is UAuth, UHelper {
+contract UExecutor is UAuth, Constants {
     URegistry public constant registry = URegistry(UREGISTRY_ADDRESS);
+
+    // step start 1
+    event Process(uint256 queueId, address actionAddress, uint256 currentStep, uint256 tottalStep);
 
     function executeQueue(uint256 _queueId, bytes[] calldata _params) public {
         IQueueVault queueVault = IQueueVault(registry.getAddr(bytes4(keccak256("QueueVault"))));
@@ -25,9 +28,13 @@ contract UExecutor is UAuth, UHelper {
             bytes32[] memory returnValues = new bytes32[](actions.length);
 
             for (uint256 i = 0; i < actions.length; ++i) {
-                returnValues[i] = _executeAction(actions, _params, paramMapping, i, returnValues);
+                returnValues[i] = _executeAction(actions[i], _params[i], paramMapping[i], returnValues);
+
+                emit Process(_queueId, actions[i], i+1, actions.length);
             }
         }
+
+        // ULogger 추가 예정
     }
 
     function executeQueueFromFlashLoan(uint256 _queueId, bytes[] calldata _params, bytes32 debt) public {
@@ -40,7 +47,9 @@ contract UExecutor is UAuth, UHelper {
         returnValues[0] = debt;
 
         for (uint256 i = 1; i < actions.length; ++i) {
-            returnValues[i] = _executeAction(actions, _params, paramMapping, i, returnValues);
+            returnValues[i] = _executeAction(actions[i], _params[i], paramMapping[i], returnValues);
+
+             emit Process(_queueId, actions[i], i+1, actions.length);
         }
     }
 
@@ -58,21 +67,21 @@ contract UExecutor is UAuth, UHelper {
         ActionBase(_firstAction).executeAction(_queueId, _params);
 
         validator.deactivateAuth();
+
     }
 
     function _executeAction(
-        address[] memory _actions,
-        bytes[] calldata _params,
-        uint8[][] memory _paramMapping,
-        uint256 _index,
+        address _actions,
+        bytes calldata _params,
+        uint8[] memory _paramMapping,
         bytes32[] memory _returnValues
     )
         internal
         returns (bytes32 response)
     {
-        (bool success, bytes memory data) = _actions[_index].delegatecall(
+        (bool success, bytes memory data) = _actions.delegatecall(
             abi.encodeWithSignature(
-                "executeAction(bytes,uint8[],bytes32[])", _params[_index], _paramMapping[_index], _returnValues
+                "executeAction(bytes,uint8[],bytes32[])", _params, _paramMapping, _returnValues
             )
         );
 

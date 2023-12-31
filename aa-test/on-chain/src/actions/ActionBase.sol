@@ -4,10 +4,10 @@ pragma solidity ^0.8.10;
 import { UAuth } from "../auth/UAuth.sol";
 import { URegistry } from "../URegistry.sol";
 import { UEventLogger } from "../logger/UEventLogger.sol";
-import { UHelper } from "../utils/UHelper.sol";
+import { Constants } from "../utils/Constants.sol";
 import { IKernel } from "../../lib/kernel.git/src/interfaces/IKernel.sol";
 
-abstract contract ActionBase is UHelper {
+abstract contract ActionBase is Constants {
     event ActionEvent(string indexed logName, bytes data);
 
     URegistry public constant registry = URegistry(UREGISTRY_ADDRESS);
@@ -19,7 +19,7 @@ abstract contract ActionBase is UHelper {
 
     /// @dev Return params index range [1, 127]
     uint8 public constant RETURN_MIN_INDEX_VALUE = 1;
-    uint8 public constant RETURN_MAX_INDEX_VALUE = 127;
+    uint8 public constant RETURN_MAX_INDEX_VALUE = 128;
 
     /// @dev If the input value should not be replaced
     uint8 public constant NO_PARAM_MAPPING = 0;
