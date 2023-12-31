@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "openzeppelin-contracts.git/contracts/interfaces/IERC20.sol";
+import "openzeppelin/IERC20.sol";
 
 abstract contract IWETH {
     function allowance(address, address) public virtual view returns (uint256);

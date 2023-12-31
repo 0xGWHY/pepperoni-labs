@@ -5,7 +5,7 @@ import { UAuth } from "../auth/UAuth.sol";
 import { URegistry } from "../URegistry.sol";
 import { UEventLogger } from "../logger/UEventLogger.sol";
 import { Constants } from "../utils/Constants.sol";
-import { IKernel } from "kernel/src/interfaces/IKernel.sol";
+import { IKernel } from "kernel/IKernel.sol";
 
 abstract contract ActionBase is Constants {
     event ActionEvent(string indexed logName, bytes data);

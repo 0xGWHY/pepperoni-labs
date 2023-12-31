@@ -1,1 +1,2 @@
-kernel/=lib/kernel/src/
+kernel/=lib/kernel/src/interfaces
+openzeppelin/=lib/openzeppelin-contracts.git/contracts/interfaces

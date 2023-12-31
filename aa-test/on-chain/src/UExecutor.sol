@@ -7,7 +7,7 @@ import { Constants } from "./utils/Constants.sol";
 import { IQueueVault } from "./interfaces/IQueueVault.sol";
 import {IUValidator} from "./interfaces/IUValidator.sol";
 import { ActionBase } from "./actions/ActionBase.sol";
-import { IKernel } from "kernel/interfaces/IKernel.sol";
+import { IKernel } from "kernel/IKernel.sol";
 
 contract UExecutor is UAuth, Constants {
     URegistry public constant registry = URegistry(UREGISTRY_ADDRESS);
