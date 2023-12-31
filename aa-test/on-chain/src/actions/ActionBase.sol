@@ -34,7 +34,7 @@ abstract contract ActionBase is UHelper {
     }
 
     function executeAction(
-        bytes memory _callData,
+        bytes memory _params,
         uint8[][] memory _paramMapping,
         bytes32[] memory _returnValues
     )
@@ -43,7 +43,16 @@ abstract contract ActionBase is UHelper {
         virtual
         returns (bytes32);
 
-    function executeActionDirect(bytes memory _callData) public payable virtual;
+    function executeAction(
+        uint256 _queueId,
+        bytes[] calldata _params
+    )
+        public
+        payable
+        virtual
+        returns (bytes32);
+
+    function executeActionDirect(bytes memory _params) public payable virtual;
 
     function actionType() public pure virtual returns (uint8);
 
