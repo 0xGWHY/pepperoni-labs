@@ -2,8 +2,6 @@
 pragma solidity ^0.8.10;
 
 import "./SepoliaUniV2Addresses.sol";
-import "../../../../interfaces/uniswap/IUniswapV2Pair.sol";
-import "../../../../interfaces/uniswap/IUniswapV2Router02.sol";
 
 contract UniV2Helper is SepoliaUniV2Addresses {
     IUniswapV2Router02 public constant router =
