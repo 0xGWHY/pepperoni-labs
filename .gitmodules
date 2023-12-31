@@ -12,3 +12,6 @@
 [submodule "aa-test/on-chain/lib/account-abstraction"]
 	path = aa-test/on-chain/lib/account-abstraction
 	url = https://github.com/eth-infinitism/account-abstraction
+[submodule "aa-test/on-chain/lib/kernel"]
+	path = aa-test/on-chain/lib/kernel
+	url = https://github.com/zerodevapp/kernel
