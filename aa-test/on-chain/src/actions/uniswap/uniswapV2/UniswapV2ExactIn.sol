@@ -41,9 +41,9 @@ contract UniswapV2ExactIn is ActionBase,Constants {
             eth = true;
         }
 
-        params.amountIn = _parseParamABytes32(params.amountIn, _paramMapping[0], _returnValues);
-        params.amoutOutMin = _parseParamABytes32(params.amoutOutMin, _paramMapping[1], _returnValues);
-        params.to = _parseParamABytes32(params.to, _paramMapping[2], _returnValues);
+        params.amountIn = _parseParamUint(params.amountIn, _paramMapping[0], _returnValues);
+        params.amoutOutMin = _parseParamUint(params.amoutOutMin, _paramMapping[1], _returnValues);
+        params.to = _parseParamAddr(params.to, _paramMapping[2], _returnValues);
 
         uint256 amount = _swapExactTokensForTokens(params);
 
@@ -53,7 +53,7 @@ contract UniswapV2ExactIn is ActionBase,Constants {
 
         result = bytes32(amount);
 
-        bytes memory logData = abi.encode(_queueId, _params.path[0], _params.path[_params.path.length - 1], amount);
+        bytes memory logData = abi.encode(_queueId, _params.path[0], _params.path[_params.path.length - 1], params.amountIn,amount);
         emit ActionEvent("UniswapV2ExactIn", logData);
     }
 
@@ -78,7 +78,7 @@ contract UniswapV2ExactIn is ActionBase,Constants {
             TokenUtils.withdrawWeth(amount);
         }
 
-        bytes memory logData = abi.encode(_params.path[0], _params.path[_params.path.length - 1], amount);
+        bytes memory logData = abi.encode(_params.path[0], _params.path[_params.path.length - 1], params.amountIn, amount);
         logger.logActionDirectEvent("UniswapV2ExactIn", logData);
 
         emit ActionEvent("UniswapV2ExactIn", logData);

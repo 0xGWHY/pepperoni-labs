@@ -5,12 +5,12 @@ import { ActionBase } from "../../ActionBase.sol";
 import { TokenUtils } from "../../../utils/TokenUtils.sol";
 import { Constants } from "../../../utils/Constants.sol";
 
-contract UniswapV2ExactOut is ActionBase {
+contract UniswapV2ExactOut is ActionBase, Constants {
     using TokenUtils for address;
 
     struct Params {
-        uint256 amountIn;
-        uint256 amountOutMin;
+        uint256 amountOut;
+        uint256 amountInMax;
         address to;
         address[] path;
         uint256 deadline;
@@ -31,9 +31,9 @@ contract UniswapV2ExactOut is ActionBase {
         bool eth;
 
         if(address(params.path[0]) == WETH_ADDRESS){
-            TokenUtils.ensureETHAndWETH(WETH_ADDRESS, amountIn);
+            TokenUtils.ensureETHAndWETH(WETH_ADDRESS, amountInMax);
         } else {
-            require(params.path[0].balanceOf(address(this)) >= params.amountIn, "Not enough TokenB");
+            require(params.path[0].balanceOf(address(this)) >= params.amountInMax, "Not enough TokenB");
         }
 
         if (params.path[params.path.length - 1] == ETH_ADDRESS) {
@@ -41,20 +41,20 @@ contract UniswapV2ExactOut is ActionBase {
             eth = true;
         }
 
-        params.amountIn = _parseParamABytes32(params.amountIn, _paramMapping[0], _returnValues);
-        params.amoutOutMin = _parseParamABytes32(params.amoutOutMin, _paramMapping[1], _returnValues);
-        params.to = _parseParamABytes32(params.to, _paramMapping[2], _returnValues);
+        params.amountOut = _parseParamUint(params.amountOut, _paramMapping[0], _returnValues);
+        params.amountInMax = _parseParamUint(params.amountInMax, _paramMapping[1], _returnValues);
+        params.to = _parseParamAddr(params.to, _paramMapping[2], _returnValues);
 
         uint256 amount = _swapExactTokensForTokens(params);
 
         if(eth){
-            TokenUtils.withdrawWeth(amount);
+            TokenUtils.withdrawWeth(params.amountOut);
         }
 
         result = bytes32(amount);
 
-        bytes memory logData = abi.encode(_queueId, _params.path[0], _params.path[_params.path.length - 1], amount);
-        emit ActionEvent("UniswapV2ExactIn", logData);
+        bytes memory logData = abi.encode(_queueId, _params.path[0], _params.path[_params.path.length - 1], amount, params.amountOut);
+        emit ActionEvent("UniswapV2ExactOut", logData);
     }
 
     function executeActionDirect(bytes memory _params) public payable override {
@@ -62,9 +62,9 @@ contract UniswapV2ExactOut is ActionBase {
         bool eth;
 
         if(address(params.path[0]) == WETH_ADDRESS){
-            TokenUtils.ensureETHAndWETH(WETH_ADDRESS, amountIn);
+            TokenUtils.ensureETHAndWETH(WETH_ADDRESS, amountInMax);
         } else {
-            require(params.path[0].balanceOf(address(this)) >= params.amountIn, "Not enough TokenB");
+            require(params.path[0].balanceOf(address(this)) >= params.amountInMax, "Not enough TokenB");
         }
 
         if (params.path[params.path.length - 1] == ETH_ADDRESS) {
@@ -75,13 +75,13 @@ contract UniswapV2ExactOut is ActionBase {
         uint256 amount = _swapExactTokensForTokens(params);
 
         if(eth){
-            TokenUtils.withdrawWeth(amount);
+            TokenUtils.withdrawWeth(params.amountOut);
         }
 
-        bytes memory logData = abi.encode(_params.path[0], _params.path[_params.path.length - 1], amount);
-        logger.logActionDirectEvent("UniswapV2ExactIn", logData);
+        bytes memory logData = abi.encode(_params.path[0], _params.path[_params.path.length - 1], amount, params.amountOut);
+        logger.logActionDirectEvent("UniswapV2ExactOut", logData);
 
-        emit ActionEvent("UniswapV2ExactIn", logData);
+        emit ActionEvent("UniswapV2ExactOut", logData);
     }
 
     function actionType() public pure override returns (uint8) {
@@ -94,19 +94,19 @@ contract UniswapV2ExactOut is ActionBase {
 
     //////////////////////////// ACTION LOGIC ////////////////////////////
 
-    function _swapExactTokensForTokens(Params _params) internal returns (uint256 amount) {
+    function _swapTokensForExactTokens(Params _params) internal returns (uint256 amount) {
         
-        _params.path[0].approveToken(address(router), _params.amountIn);
+        _params.path[0].approveToken(address(router), _params.amountInMax);
 
-        (address[] amounts) = router.swapExactTokensForTokens(
-            _params.amountIn,
-            _params.amountOutMin,
+        (address[] amounts) = router.swapTokensForExactTokens(
+            _params.amountOut,
+            _params.amountInMax,
             _params.path,
             _params.to,
             _params.deadline
         );
 
-        amount = amounts[amounts.length - 1];
+        amount = amounts[0];
 
         _params.path[0].revokeToken(address(router));
     }
