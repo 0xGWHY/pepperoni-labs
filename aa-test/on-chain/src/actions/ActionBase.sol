@@ -34,8 +34,9 @@ abstract contract ActionBase is Constants {
     }
 
     function executeAction(
+        uint256 _queueId,
         bytes memory _params,
-        uint8[][] memory _paramMapping,
+        uint8[] memory _paramMapping,
         bytes32[] memory _returnValues
     )
         public
@@ -45,7 +46,7 @@ abstract contract ActionBase is Constants {
 
     function executeAction(
         uint256 _queueId,
-        bytes[] calldata _params
+        bytes[] memory _params
     )
         public
         payable

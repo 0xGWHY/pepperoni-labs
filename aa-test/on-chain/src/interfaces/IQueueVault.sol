@@ -2,10 +2,10 @@
 pragma solidity ^0.8.10;
 
 interface IQueueVault {
-
     enum QueueType {
         PUBLIC_QUEUE, // 0
         PRIVATE_QUEUE // 1
+
     }
 
     function createQueue(
@@ -14,7 +14,9 @@ interface IQueueVault {
         uint8[][] calldata _paramMapping,
         uint256 _fee,
         address[] calldata _whitelist
-    ) external payable;
+    )
+        external
+        payable;
 
     function getFirstAction(uint256 _queueId) external view returns (address);
 
@@ -22,11 +24,7 @@ interface IQueueVault {
 
     function queueAccessCheck(uint256 queueId) external view;
 
-    function setQueueActions(
-        uint256 _queueId,
-        bytes4[] calldata _actions,
-        uint8[][] calldata _paramMapping
-    ) external;
+    function setQueueActions(uint256 _queueId, bytes4[] calldata _actions, uint8[][] calldata _paramMapping) external;
 
     function setQueueFee(uint256 _queueId, uint256 _fee) external;
 

@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import { ActionBase } from "../../ActionBase.sol";
-import { TokenUtils } from "../../../utils/TokenUtils.sol";
-// https://docs.uniswap.org/contracts/v2/reference/smart-contracts/router-02#swapexacttokensfortokens
+import { ActionBase } from "./ActionBase.sol";
 
-contract UniswapV2ExactIn is ActionBase {
-    using TokenUtils for address;
+contract ActionContractExample is ActionBase {
+    // 사용할 라이브러리 적용
+    // using TokenUtils for address;
 
-    struct Params { }
+    struct Params {
+        address from;
+        address to;
+    }
 
     function executeAction(
         uint256 _queueId,

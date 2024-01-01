@@ -20,6 +20,7 @@ contract QueueVault is UAuth {
     enum QueueType {
         PUBLIC_QUEUE, // 0
         PRIVATE_QUEUE // 1
+
     }
 
     struct Queue {
