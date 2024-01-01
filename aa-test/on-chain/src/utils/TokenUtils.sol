@@ -18,6 +18,14 @@ library TokenUtils {
         }
     }
 
+    function revokeToken(address _tokenAddr, address _to) internal {
+        if (_tokenAddr == ETH_ADDR) return;
+
+        if (IERC20(_tokenAddr).allowance(address(this), _to) != 0) {
+            IERC20(_tokenAddr).safeRevoke(_to);
+        }
+    }
+
     function pullTokensIfNeeded(address _token, address _from, uint256 _amount) internal returns (uint256) {
         // handle max uint amount
         if (_amount == type(uint256).max) {
@@ -48,11 +56,11 @@ library TokenUtils {
         return _amount;
     }
 
-    function tokenWrap(uint256 _amount) internal {
+    function depositWeth(uint256 _amount) internal {
         IWETH(WETH_ADDR).deposit{ value: _amount }();
     }
 
-    function tokenUnWrap(uint256 _amount) internal {
+    function withdrawWeth(uint256 _amount) internal {
         IWETH(WETH_ADDR).withdraw(_amount);
     }
 
@@ -68,5 +76,28 @@ library TokenUtils {
         if (_token == ETH_ADDR) return 18;
 
         return IERC20(_token).decimals();
+    }
+
+    function ensureETHAndWETH(address desiredToken, uint256 desiredAmount) internal {
+        require(desiredToken == ETH_ADDR || desiredToken == WETH_ADDR, "Invalid address : use ETH or WETH address");
+
+        uint256 currentWeth = IWETH(WETH_ADDR).balanceOf(address(this));
+        uint256 currentEth = address(this).balance;
+
+        uint256 total = currentWeth + currentEth;
+
+        require(total >= desiredAmount, "Not enough total balance ( ETH + WETH )");
+
+        if(desiredToken == WETH_ADDR){
+            if (currentWeth < desiredAmount) {
+                uint256 amountToWrap = desiredAmount - currentWeth;
+                IWETH(WETH_ADDR).deposit{ value: amountToWrap }();
+            }
+        } else {
+            if (currentEth < desiredAmount) {
+                uint256 amountToUnWrap = desiredAmount - currentEth;
+                IWETH(WETH_ADDR).withdraw(amountToUnWrap);
+            }
+        }
     }
 }

@@ -33,23 +33,19 @@ contract UniswapV2AddLiquidity is ActionBase, UniV2Helper, Constants {
     {
         Params memory params = parseInputs(_params);
 
+        // ETH와 WETH를 더한 잔액이 요청한 금액만큼인지 확인
+        // 부족한 WETH는 ETH를 wrap해서 보충
         if (address(params.tokenA) == WETH_ADDRESS || address(params.tokenB) == WETH_ADDRESS) {
             uint256 possibleWeth = IWETH(WETH_ADDRESS).balanceOf(address(this)) + address(this).balance;
             uint256 desiredWeth;
-
             if (address(params.tokenA) == WETH_ADDRESS) {
                 desiredWeth = params.amountADesired;
-                require(possibleWeth >= desiredWeth, "Not enough WETH");
+                TokenUtils.ensureETHAndWETH(WETH_ADDRESS, desiredWeth);
                 require(params.tokenB.balanceOf(address(this)) >= params.amountBDesired, "Not enough TokenB");
             } else {
                 desiredWeth = params.amountBDesired;
-                require(possibleWeth >= desiredWeth, "Not enough WETH");
+                TokenUtils.ensureETHAndWETH(WETH_ADDRESS, desiredWeth);
                 require(params.tokenA.balanceOf(address(this)) >= params.amountADesired, "Not enough TokenA");
-            }
-
-            if (IWETH(WETH_ADDRESS).balanceOf(address(this)) < desiredWeth) {
-                uint256 amountToWrap = desiredWeth - possibleWeth;
-                TokenUtils.tokenWrap(amountToWrap);
             }
         } else {
             require(params.tokenA.balanceOf(address(this)) >= params.amountADesired, "Not enough TokenA");
@@ -64,11 +60,10 @@ contract UniswapV2AddLiquidity is ActionBase, UniV2Helper, Constants {
 
         (amountA, amountB, liqAmount) = _addLiquidity(params);
 
-        bytes memory logData = abi.encode(_queueId, _params, amountA, amountB, liqAmount);
-
-        emit ActionEvent("UniswapV2AddLiquidity", logData);
-
         result = bytes32(liqAmount);
+
+        bytes memory logData = abi.encode(_queueId, _params, amountA, amountB, liqAmount);
+        emit ActionEvent("UniswapV2AddLiquidity", logData);
     }
 
     function executeActionDirect(bytes memory _params) public payable override {
@@ -80,18 +75,14 @@ contract UniswapV2AddLiquidity is ActionBase, UniV2Helper, Constants {
 
             if (address(params.tokenA) == WETH_ADDRESS) {
                 desiredWeth = params.amountADesired;
-                require(possibleWeth >= desiredWeth, "Not enough WETH");
+                TokenUtils.ensureETHAndWETH(WETH_ADDRESS, desiredWeth);
                 require(params.tokenB.balanceOf(address(this)) >= params.amountBDesired, "Not enough TokenB");
             } else {
                 desiredWeth = params.amountBDesired;
-                require(possibleWeth >= desiredWeth, "Not enough WETH");
+                TokenUtils.ensureETHAndWETH(WETH_ADDRESS, desiredWeth);
                 require(params.tokenA.balanceOf(address(this)) >= params.amountADesired, "Not enough TokenA");
             }
 
-            if (IWETH(WETH_ADDRESS).balanceOf(address(this)) < desiredWeth) {
-                uint256 amountToWrap = desiredWeth - possibleWeth;
-                TokenUtils.tokenWrap(amountToWrap);
-            }
         } else {
             require(params.tokenA.balanceOf(address(this)) >= params.amountADesired, "Not enough TokenA");
             require(params.tokenB.balanceOf(address(this)) >= params.amountBDesired, "Not enough TokenB");
@@ -99,10 +90,10 @@ contract UniswapV2AddLiquidity is ActionBase, UniV2Helper, Constants {
 
         (amountA, amountB, liqAmount) = _addLiquidity(params);
 
-        bytes memory logData = abi.encode(_queueId, _params, amountA, amountB, liqAmount);
+        bytes memory logData = abi.encode(_params, amountA, amountB, liqAmount);
+        logger.logActionDirectEvent("UniswapV2AddLiquidity", logData);
 
         emit ActionEvent("UniswapV2AddLiquidity", logData);
-        logger.logActionDirectEvent("UniswapV2AddLiquidity", logData);
     }
 
     function actionType() public pure override returns (uint8) {
@@ -119,19 +110,22 @@ contract UniswapV2AddLiquidity is ActionBase, UniV2Helper, Constants {
         internal
         returns (uint256 amountA, uint256 amountB, uint256 liqAmount)
     {
-        // approve router so it can pull tokens
+
         _params.tokenA.approveToken(address(router), _params.amountADesired);
         _params.tokenB.approveToken(address(router), _params.amountBDesired);
 
         (amountA, amountB, liqAmount) = router.addLiquidity(
-            _uniData.tokenA,
-            _uniData.tokenB,
-            _uniData.amountADesired,
-            _uniData.amountBDesired,
-            _uniData.amountAMin,
-            _uniData.amountBMin,
-            _uniData.to,
-            _uniData.deadline
+            _params.tokenA,
+            _params.tokenB,
+            _params.amountADesired,
+            _params.amountBDesired,
+            _params.amountAMin,
+            _params.amountBMin,
+            _params.to,
+            _params.deadline
         );
+
+        _params.tokenA.revokeToken(address(router));
+        _params.tokenB.revokeToken(address(router));
     }
 }

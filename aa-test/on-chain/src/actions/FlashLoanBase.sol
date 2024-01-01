@@ -7,7 +7,10 @@ import { UEventLogger } from "../logger/UEventLogger.sol";
 import { Constants } from "../utils/Constants.sol";
 import { IKernel } from "kernel/IKernel.sol";
 
-abstract contract ActionBase is Constants {
+// FlashLoan은 가장 처음에 실행되기 때문에 isReplaceable 할 리가 없다.
+// 추후 정리 필요
+
+abstract contract FlashLoanBase is Constants {
     event ActionEvent(string indexed logName, bytes data);
 
     URegistry public constant registry = URegistry(UREGISTRY_ADDRESS);
@@ -35,9 +38,7 @@ abstract contract ActionBase is Constants {
 
     function executeAction(
         uint256 _queueId,
-        bytes memory _params,
-        uint8[] memory _paramMapping,
-        bytes32[] memory _returnValues
+        bytes[] memory _params
     )
         public
         payable
