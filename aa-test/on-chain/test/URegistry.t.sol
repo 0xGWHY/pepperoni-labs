@@ -5,15 +5,17 @@ import { Test } from "forge-std/Test.sol";
 import { URegistry } from "../src/URegistry.sol";
 import { UAuth } from "../src/auth/UAuth.sol";
 
-contract URegistryTest is Test, UAuth {
+contract URegistryTest is Test {
     URegistry public uRegistry;
+    UAuth public uAuth;
     address public stranger;
     address entry;
     address thirdPartyEntry;
     address randomContract;
 
     function setUp() public {
-        uRegistry = new URegistry();
+        uAuth = new UAuth();
+        uRegistry = new URegistry(address(uAuth));
         stranger = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "stranger")))));
         entry = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, "entry")))));
         thirdPartyEntry =
