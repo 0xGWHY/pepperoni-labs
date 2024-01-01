@@ -3,7 +3,7 @@ pragma solidity ^0.8.10;
 
 import "./auth/UAuth.sol";
 
-contract URegistry is UAuth {
+contract URegistry {
     error EntryAlreadyExistsError(bytes4);
     error EntryNonExistentError(bytes4);
     error EntryNotInChangeError(bytes4);
@@ -23,6 +23,8 @@ contract URegistry is UAuth {
 
     event AddNewThirdPartyContract(address, bytes4, address);
     event EditThirdPartyContract(address, bytes4, address, address);
+
+    UAuth private auth;
 
     struct Entry {
         address contractAddr;
@@ -45,6 +47,15 @@ contract URegistry is UAuth {
     mapping(bytes4 => address) public previousAddresses;
     mapping(bytes4 => address) public pendingAddresses;
     mapping(bytes4 => uint256) public pendingWaitTimes;
+
+    constructor(address _uAuthContract){
+        auth = UAuth(_uAuthContract);
+    }
+
+    modifier onlyOwner() {
+        require(auth.isOwner(), "UAuth: caller is not the owner");
+        _;
+    }
 
     function getAddr(bytes4 _id) public view returns (address) {
         if (entries[_id].exists) {

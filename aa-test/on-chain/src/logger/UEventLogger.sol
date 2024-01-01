@@ -4,8 +4,7 @@ pragma solidity ^0.8.10;
 contract UEventLogger {
     event ExecuteQueueEvent(
         address indexed caller,
-        uint256 indexed queueId,
-        uint256 indexed value
+        uint256 indexed queueId
     );
 
     event ActionDirectEvent(
@@ -15,10 +14,9 @@ contract UEventLogger {
     );
 
     function logExecuteQueueEvent(
-        uint256 _queueId,
-        uint256 _value
+        uint256 _queueId
     ) public {
-        emit ExecuteQueueEvent(msg.sender, _queueId, _value);
+        emit ExecuteQueueEvent(msg.sender, _queueId);
     }
 
     function loglogActionDirectEventDirect(

@@ -15,13 +15,13 @@ contract UAuth {
         return _owner;
     }
 
+    function isOwner() public view returns (bool) {
+        return msg.sender == _owner;
+    }
+
     modifier onlyOwner() {
         require(isOwner(), "UAuth: caller is not the owner");
         _;
-    }
-
-    function isOwner() internal view returns (bool) {
-        return msg.sender == _owner;
     }
 
     function transferOwnership(address newOwner) external onlyOwner {

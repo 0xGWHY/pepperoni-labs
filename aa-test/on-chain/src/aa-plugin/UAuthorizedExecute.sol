@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import { UAuth } from "../auth/UAuth.sol";
-
-contract UAuthorizedExecute is UAuth {
+contract UAuthorizedExecute {
     function uExecuteDelegateCall(address to, bytes memory data) external payable {
         assembly {
             let success := delegatecall(gas(), to, add(data, 0x20), mload(data), 0, 0)

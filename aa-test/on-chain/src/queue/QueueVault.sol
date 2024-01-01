@@ -2,9 +2,8 @@
 pragma solidity ^0.8.10;
 
 import "../URegistry.sol";
-import { UAuth } from "../auth/UAuth.sol";
 
-contract QueueVault is UAuth {
+contract QueueVault {
     URegistry uRegistry;
 
     modifier onlyManager(uint256 _queueId) {

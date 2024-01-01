@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import { UAuth } from "./auth/UAuth.sol";
 import { URegistry } from "./URegistry.sol";
 import { Constants } from "./utils/Constants.sol";
 import { IQueueVault } from "./interfaces/IQueueVault.sol";
 import { IUValidator } from "./interfaces/IUValidator.sol";
 import { ActionBase } from "./actions/ActionBase.sol";
+import { FlashLoanBase } from "./actions/FlashLoanBase.sol";
 import { IKernel } from "kernel/IKernel.sol";
 import {UEventLogger} from "./logger/UEventLogger.sol";
 
-contract UExecutor is UAuth, Constants {
+contract UExecutor is Constants {
     URegistry public constant registry = URegistry(UREGISTRY_ADDRESS);
     UEventLogger public constant logger = UEventLogger(UEVENTLOGGER_ADDRESS);
 
@@ -18,7 +18,7 @@ contract UExecutor is UAuth, Constants {
     event Process(uint256 indexed queueId, address actionAddress, uint256 currentStep, uint256 tottalStep);
 
     function executeQueue(uint256 _queueId, bytes[] calldata _params) public payable {
-        IQueueVault queueVault = IQueueVault(registry.getAddr(bytes4(keccak256("QueueVault"))));
+        IQueueVault queueVault = IQueueVault(registry.getAddr(bytes4(keccak256(bytes("QueueVault")))));
         queueVault.queueAccessCheck(_queueId);
         address firstAction = queueVault.getFirstAction(_queueId);
 
@@ -36,11 +36,11 @@ contract UExecutor is UAuth, Constants {
             }
         }
 
-        logger.logExecuteQueueEvent(_queueId, msg.value);
+        logger.logExecuteQueueEvent(_queueId);
     }
 
     function executeQueueFromFlashLoan(uint256 _queueId, bytes[] calldata _params, bytes32 debt) public {
-        IQueueVault queueVault = IQueueVault(registry.getAddr(bytes4(keccak256("QueueVault"))));
+        IQueueVault queueVault = IQueueVault(registry.getAddr(bytes4(keccak256(bytes("QueueVault")))));
         queueVault.queueAccessCheck(_queueId);
 
         (address[] memory actions, uint8[][] memory paramMapping) = queueVault.getActions(_queueId);
@@ -56,7 +56,7 @@ contract UExecutor is UAuth, Constants {
     }
 
     function _flashLoanFirst(uint256 _queueId, address _firstAction, bytes[] calldata _params) internal {
-        IUValidator validator = IUValidator(registry.getAddr(bytes4(keccak256("UValidator"))));
+        IUValidator validator = IUValidator(registry.getAddr(bytes4(keccak256(bytes("UValidator")))));
         IUValidator.AuthStatus status = validator.getAuthStatus();
 
         if (status == IUValidator.AuthStatus.PLUGIN_NOT_ADDED) {
@@ -66,7 +66,7 @@ contract UExecutor is UAuth, Constants {
             validator.activateAuth();
         }
 
-        ActionBase(_firstAction).executeAction(_queueId, _params);
+        FlashLoanBase(_firstAction).executeAction(_queueId, _params);
 
         validator.deactivateAuth();
     }
