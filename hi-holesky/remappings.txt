@@ -1,0 +1,4 @@
+kernel/=lib/kernel.git/src/
+openzeppelin/=lib/openzeppelin-contracts.git/contracts
+solady/=lib/solady.git/src/
+aa/=lib/accouont-abstraction.git/contracts/

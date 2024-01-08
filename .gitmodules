@@ -29,3 +29,9 @@
 [submodule "hi-holesky/lib/forge-std"]
 	path = hi-holesky/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "hi-holesky/lib/account-abstraction.git"]
+	path = hi-holesky/lib/account-abstraction.git
+	url = https://github.com/eth-infinitism/account-abstraction.git
+[submodule "hi-holesky/lib/kernel.git"]
+	path = hi-holesky/lib/kernel.git
+	url = https://github.com/zerodevapp/kernel.git
