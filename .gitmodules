@@ -35,3 +35,9 @@
 [submodule "hi-holesky/lib/kernel.git"]
 	path = hi-holesky/lib/kernel.git
 	url = https://github.com/zerodevapp/kernel.git
+[submodule "hi-holesky/lib/openzeppelin-contracts.git"]
+	path = hi-holesky/lib/openzeppelin-contracts.git
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
+[submodule "hi-holesky/lib/solady.git"]
+	path = hi-holesky/lib/solady.git
+	url = https://github.com/Vectorized/solady.git

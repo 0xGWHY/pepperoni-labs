@@ -1,3 +1,4 @@
+forge-std/=lib/forge-std/src/
 kernel/=lib/kernel.git/src/
 openzeppelin/=lib/openzeppelin-contracts.git/contracts
 solady/=lib/solady.git/src/
