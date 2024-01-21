@@ -1,9 +1,18 @@
-import { encodeAbiParameters, parseEther, encodeFunctionData } from "viem";
-import { uExecutorAbi } from "./abis/u-executor-abi.js";
+import { encodeAbiParameters, parseEther, encodeFunctionData, createPublicClient, http, keccak256, encodePacked } from "viem";
+import { executorAbi } from "./abis/executor-abi.js";
+import { registryAbi } from "./abis/registry-abi.js";
+import { sepolia } from "viem/chains";
 
-export const encode = () => {
+const client = createPublicClient({
+  chain: sepolia,
+  transport: http(),
+});
+
+export const encode = async () => {
+  const REGISTRY_ADDR = "0xD77bAB549A6f2DbbF7b4e9071257C307eC97458f";
   const daiTokenAddress = "0xff34b3d4aee8ddcd6f9afffb6fe49bd371b8a357";
   const daiAmount = parseEther("100"); // dai 토큰 100개 -> wei 단위로
+  const flashLoanSelector = keccak256(encodePacked(["string"], ["AaveV3FlashLoanSimple"])).slice(0, 10);
 
   const flashLoanParams = encodeAbiParameters(
     [
@@ -14,7 +23,13 @@ export const encode = () => {
     [daiTokenAddress, daiAmount, 0]
   );
 
-  const flashLoanContractAddress = "0xC460D5cBFB5AADeC3D37D646ac6e6F3532878258";
+  const flashLoanContractAddress = await client.readContract({
+    address: REGISTRY_ADDR,
+    abi: registryAbi,
+    functionName: "getAddr",
+    args: [flashLoanSelector],
+  });
+
   const sendTokenParams = encodeAbiParameters(
     [
       { name: "tokenAddr", type: "address", internalType: "address" },
@@ -25,10 +40,10 @@ export const encode = () => {
   );
 
   const callData = encodeFunctionData({
-    abi: uExecutorAbi,
-    functionName: "uExecute",
+    abi: executorAbi,
+    functionName: "execute1Tx",
     args: [
-      BigInt(2),
+      BigInt(1),
       [flashLoanParams, sendTokenParams],
       [
         [0, 0, 0],
