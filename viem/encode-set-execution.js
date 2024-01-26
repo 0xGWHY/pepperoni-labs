@@ -15,18 +15,7 @@ export const encode = async () => {
 
   const executorSelector = keccak256(encodePacked(["string"], ["Executor"])).slice(0, 10);
   const validatorSelector = keccak256(encodePacked(["string"], ["Validator"])).slice(0, 10);
-  const funcSig = toFunctionSelector({
-    type: "function",
-    name: "execute1Tx",
-    inputs: [
-      { name: "_recipeId", type: "uint256", internalType: "uint256" },
-      { name: "_params", type: "bytes[]", internalType: "bytes[]" },
-      { name: "_paramMappings", type: "uint8[][]", internalType: "uint8[][]" },
-      { name: "_debt", type: "bytes32", internalType: "bytes32" },
-    ],
-    outputs: [],
-    stateMutability: "payable",
-  });
+  const funcSig = toFunctionSelector({"type":"function","name":"execute1Tx","inputs":[{"name":"_recipeId","type":"uint256","internalType":"uint256"},{"name":"_params","type":"bytes[]","internalType":"bytes[]"},{"name":"_paramMappings","type":"uint8[][]","internalType":"uint8[][]"},{"name":"_debt","type":"bytes32","internalType":"bytes32"}],"outputs":[],"stateMutability":"payable"});
 
   const executorAddr = await client.readContract({
     address: REGISTRY_ADDR,
