@@ -1,0 +1,31 @@
+{
+  "solidity.compileUsingRemoteVersion": "v0.8.20+commit.a1b79de6",
+  "solidity.packageDefaultDependenciesContractsDirectory": "on-chain/src",
+  "solidity.packageDefaultDependenciesDirectory": "on-chain/lib",
+  "editor.formatOnSave": true,
+  "[solidity]": {
+    "editor.defaultFormatter": "JuanBlanco.solidity"
+  },
+  "solidity.formatter": "forge",
+  "explorer.expandSingleFolderWorkspaces": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": ["javascript", "typescript"],
+  "eslint.format.enable": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+    "editor.autoIndent": "full"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+    "editor.autoIndent": "full"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+    "editor.autoIndent": "full"
+  }
+}
