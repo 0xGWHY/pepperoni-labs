@@ -6,7 +6,7 @@
   "[solidity]": {
     "editor.defaultFormatter": "JuanBlanco.solidity"
   },
-  "solidity.formatter": "forge",
+  "solidity.formatter": "prettier",
   "explorer.expandSingleFolderWorkspaces": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
@@ -14,17 +14,17 @@
   "eslint.validate": ["javascript", "typescript"],
   "eslint.format.enable": true,
   "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.autoIndent": "full"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.autoIndent": "full"
   },
   "[json]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.autoIndent": "full"
   }
